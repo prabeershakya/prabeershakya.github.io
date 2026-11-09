@@ -114,6 +114,8 @@ for (let x = 1; x < COLS - 1; x++) {
 for (const [x, fill] of DOTS) {
 	frameCells.push({ x, y: 1, fill });
 }
+// Title sits in the bar, outside .screen — the script never clears it.
+frameCells.push(...textCells(TITLE, 11, 1, "var(--text-secondary)"));
 
 /** One line of text as cells, at a given top row. */
 function textCells(text: string, col: number, row: number, fill: string): Cell[] {
@@ -133,16 +135,13 @@ function textCells(text: string, col: number, row: number, fill: string): Cell[]
 }
 
 const [statusLabel, statusValue] = DASH[DASH.length - 1]!;
-const staticCells: Cell[] = [
-	...textCells(TITLE, 11, 1, "var(--text-secondary)"),
-	...DASH.flatMap(([label, value], i) => {
-		const top = TEXT_TOP + i * PITCH;
-		return [
-			...textCells(label.padEnd(LABEL_W), PAD, top, "var(--brand)"),
-			...textCells(value, PAD + LABEL_CELLS, top, "var(--text-secondary)"),
-		];
-	}),
-];
+const staticCells: Cell[] = DASH.flatMap(([label, value], i) => {
+	const top = TEXT_TOP + i * PITCH;
+	return [
+		...textCells(label.padEnd(LABEL_W), PAD, top, "var(--brand)"),
+		...textCells(value, PAD + LABEL_CELLS, top, "var(--text-secondary)"),
+	];
+});
 const cursorCol = PAD + textWidth(statusLabel.padEnd(LABEL_W) + statusValue) + 1;
 const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 ---
@@ -197,7 +196,13 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 		statuses: string[];
 	} | null;
 
-	if (svg && dashboard && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+	if (
+		svg &&
+		dashboard &&
+		!svg.dataset.live &&
+		!window.matchMedia("(prefers-reduced-motion: reduce)").matches
+	) {
+		svg.dataset.live = "1";
 		const screen = svg.querySelector<SVGElement>(".screen");
 		const cursor = svg.querySelector<SVGRectElement>(".cursor");
 		const NS = "http://www.w3.org/2000/svg";
