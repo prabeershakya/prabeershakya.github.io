@@ -1,0 +1,324 @@
+---
+/**
+ * Playable pixel pong behind the hero: the game runs itself (AI opponent on
+ * the right) and the reader can jump in — mouse or touch moves the left
+ * paddle, and W/S or the arrow keys work while the hero is hovered.
+ *
+ * No dependencies: one <canvas> at ~4 CSS px per game pixel, scaled up with
+ * `image-rendering: pixelated`. Colours are read from the theme tokens and
+ * re-read whenever `data-theme` changes, so the game re-tints with the
+ * switcher like every other piece of art.
+ *
+ * The loop stops whenever the hero is off-screen or the tab is hidden — the
+ * game must never burn battery while invisible. Under reduced motion the
+ * loop never starts; one static frame is drawn instead.
+ *
+ * Pointer events are tracked on the hero section, not the canvas: the canvas
+ * is `pointer-events: none` so it can never block text, links or scrolling.
+ */
+---
+
+<canvas class="pong" aria-hidden="true"></canvas>
+
+<script>
+	import { GLYPHS, CHAR_W } from "../lib/pixel-font";
+
+	const SCALE = 4; // CSS px per game pixel.
+	const PADDLE_W = 3;
+	const PADDLE_H = 18;
+	const BALL = 3;
+	const NET_GAP = 4;
+
+	const START_SPEED = 55; // game px/s
+	const SPEEDUP = 1.045; // per paddle hit
+	const MAX_SPEED = 130;
+	const AI_SPEED = 50;
+
+	const canvas = document.querySelector<HTMLCanvasElement>(".pong");
+	const host = document.getElementById("top");
+
+	if (canvas && host) {
+		const ctx = canvas.getContext("2d");
+
+		/*
+			Theme tokens, re-read on every palette switch. `getComputedStyle`
+			returns empty strings before styles are loaded, hence the fallbacks.
+		*/
+		const readColors = () => {
+			const s = getComputedStyle(document.documentElement);
+			return {
+				brand: s.getPropertyValue("--brand").trim() || "#9ece6a",
+				strong: s.getPropertyValue("--border-strong").trim() || "#414868",
+				subtle: s.getPropertyValue("--border-subtle").trim() || "#24283b",
+				muted: s.getPropertyValue("--text-muted").trim() || "#8b93b8",
+			};
+		};
+
+		let colors = readColors();
+		new MutationObserver(() => {
+			colors = readColors();
+			if (!running) render();
+		}).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+		let gw = 0;
+		let gh = 0;
+
+		const state = {
+			ball: { x: 0, y: 0, vx: 0, vy: 0 },
+			player: 0, // paddle top, game px
+			ai: 0,
+			scorePlayer: 0,
+			scoreAi: 0,
+			playerVel: 0, // from keys, game px/s
+			keys: new Set<string>(),
+			hovered: false,
+			visible: true,
+			serving: true,
+			serveWait: 0,
+		};
+
+		const resize = () => {
+			const rect = host.getBoundingClientRect();
+			gw = Math.max(80, Math.round(rect.width / SCALE));
+			gh = Math.max(60, Math.round(rect.height / SCALE));
+			canvas.width = gw;
+			canvas.height = gh;
+			state.player = clamp(state.player || gh / 2 - PADDLE_H / 2, 0, gh - PADDLE_H);
+			state.ai = clamp(state.ai || gh / 2 - PADDLE_H / 2, 0, gh - PADDLE_H);
+			state.ball.x = clamp(state.ball.x || gw / 2, 0, gw);
+			state.ball.y = clamp(state.ball.y || gh / 2, 0, gh);
+		};
+
+		const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+		/** Serve toward `dir` (-1 = toward the player, 1 = toward the AI). */
+		const serve = (dir: number) => {
+			state.ball.x = gw / 2 - BALL / 2;
+			state.ball.y = gh / 2 - BALL / 2;
+			state.ball.vx = dir * START_SPEED;
+			state.ball.vy = (Math.random() * 2 - 1) * START_SPEED * 0.6;
+			state.serving = true;
+		};
+
+		/* ------------------------------- input -------------------------------- */
+
+		// Mouse / touch: the paddle follows the pointer's vertical position.
+		host.addEventListener("pointermove", (event) => {
+			const rect = host.getBoundingClientRect();
+			const y = ((event.clientY - rect.top) / rect.height) * gh - PADDLE_H / 2;
+			state.player = clamp(y, 0, gh - PADDLE_H);
+			state.playerVel = 0;
+		});
+
+		host.addEventListener("pointerenter", () => {
+			state.hovered = true;
+		});
+		host.addEventListener("pointerleave", () => {
+			state.hovered = false;
+			state.keys.clear();
+			state.playerVel = 0;
+		});
+
+		/*
+			Keyboard: only while the hero is hovered, so arrow keys keep
+			scrolling the page everywhere else. The editable-target guard stops
+			the game from ever hijacking typing.
+		*/
+		const EDITABLE = ["INPUT", "TEXTAREA", "SELECT"];
+		window.addEventListener("keydown", (event) => {
+			if (!state.hovered) return;
+			const target = event.target as HTMLElement | null;
+			if (target && (EDITABLE.includes(target.tagName) || target.isContentEditable)) return;
+			const key = event.key.toLowerCase();
+			if (["arrowup", "arrowdown", "w", "s"].includes(key)) {
+				state.keys.add(key);
+				event.preventDefault();
+			}
+		});
+		window.addEventListener("keyup", (event) => state.keys.delete(event.key.toLowerCase()));
+
+		/* ------------------------------ simulation ----------------------------- */
+
+		const step = (dt: number) => {
+			// Keys move the paddle at a fixed rate; pointer moves are instant.
+			let keyVel = 0;
+			if (state.keys.has("arrowup") || state.keys.has("w")) keyVel -= 90;
+			if (state.keys.has("arrowdown") || state.keys.has("s")) keyVel += 90;
+			if (keyVel !== 0) state.player = clamp(state.player + keyVel * dt, 0, gh - PADDLE_H);
+
+			// AI: chase the ball when it is coming, drift home when it is not.
+			const aiTarget =
+				state.ball.vx > 0 ? state.ball.y + BALL / 2 - PADDLE_H / 2 : gh / 2 - PADDLE_H / 2;
+			const aiDelta = clamp(aiTarget - state.ai, -AI_SPEED * dt, AI_SPEED * dt);
+			state.ai = clamp(state.ai + aiDelta, 0, gh - PADDLE_H);
+
+			if (state.serving) {
+				// A short beat before each serve so a point does not read as a glitch.
+				state.serveWait += dt;
+				if (state.serveWait < 0.9) return;
+				state.serveWait = 0;
+				state.serving = false;
+			}
+
+			const ball = state.ball;
+			ball.x += ball.vx * dt;
+			ball.y += ball.vy * dt;
+
+			// Walls.
+			if (ball.y <= 0) {
+				ball.y = 0;
+				ball.vy = Math.abs(ball.vy);
+			}
+			if (ball.y >= gh - BALL) {
+				ball.y = gh - BALL;
+				ball.vy = -Math.abs(ball.vy);
+			}
+
+			// Player paddle (left, at the screen edge).
+			if (ball.vx < 0 && ball.x <= PADDLE_W + 1 && ball.x >= PADDLE_W - BALL - 1) {
+				if (ball.y + BALL >= state.player && ball.y <= state.player + PADDLE_H) {
+					ball.x = PADDLE_W + 1;
+					const speed = Math.min(MAX_SPEED, Math.abs(ball.vx) * SPEEDUP);
+					ball.vx = speed;
+					ball.vy = clamp((ball.y - state.player + BALL / 2 - PADDLE_H / 2) * 4.2, -80, 80);
+				}
+			}
+
+			// AI paddle (right).
+			if (ball.vx > 0 && ball.x + BALL >= gw - PADDLE_W - 1 && ball.x <= gw - PADDLE_W + BALL) {
+				if (ball.y + BALL >= state.ai && ball.y <= state.ai + PADDLE_H) {
+					ball.x = gw - PADDLE_W - 1 - BALL;
+					const speed = Math.min(MAX_SPEED, Math.abs(ball.vx) * SPEEDUP);
+					ball.vx = -speed;
+					ball.vy = clamp((ball.y - state.ai + BALL / 2 - PADDLE_H / 2) * 4.2, -80, 80);
+				}
+			}
+
+			// Points. Missing your own serve hands one over.
+			if (ball.x < -BALL) {
+				state.scoreAi += 1;
+				serve(1);
+			} else if (ball.x > gw + BALL) {
+				state.scorePlayer += 1;
+				serve(-1);
+			}
+		};
+
+		/* ------------------------------- rendering ----------------------------- */
+
+		/** Pixel-font text on the canvas: one fillRect per lit cell. */
+		const drawText = (text: string, x: number, y: number, scale: number, color: string) => {
+			ctx!.fillStyle = color;
+			for (const [i, ch] of [...text.toUpperCase()].entries()) {
+				const glyph = GLYPHS[ch];
+				if (!glyph) continue;
+				for (const [row, bits] of glyph.entries()) {
+					for (const bit of [2, 1, 0]) {
+						if ((bits >> bit) & 1) {
+							ctx!.fillRect(
+								x + i * (CHAR_W + 1) * scale + (2 - bit) * scale,
+								y + row * scale,
+								scale,
+								scale,
+							);
+						}
+					}
+				}
+			}
+		};
+
+		const render = () => {
+			ctx!.clearRect(0, 0, gw, gh);
+
+			// Dashed centre net.
+			ctx!.fillStyle = colors.subtle;
+			for (let y = 0; y < gh; y += NET_GAP * 2) {
+				ctx!.fillRect(gw / 2 - 1, y, 1, NET_GAP);
+			}
+
+			// Scores, muted so they never fight the content.
+			drawText(String(state.scorePlayer), gw / 2 - 14, 3, 2, colors.strong);
+			drawText(String(state.scoreAi), gw / 2 + 8, 3, 2, colors.strong);
+
+			// Player paddle (brand — it is yours), AI paddle (neutral).
+			ctx!.fillStyle = colors.brand;
+			ctx!.fillRect(1, Math.round(state.player), PADDLE_W, PADDLE_H);
+			ctx!.fillStyle = colors.strong;
+			ctx!.fillRect(gw - PADDLE_W - 1, Math.round(state.ai), PADDLE_W, PADDLE_H);
+
+			// Ball.
+			ctx!.fillStyle = colors.brand;
+			ctx!.fillRect(Math.round(state.ball.x), Math.round(state.ball.y), BALL, BALL);
+		};
+
+		/* ------------------------------ lifecycle ------------------------------ */
+
+		let running = false;
+		let raf = 0;
+		let last = 0;
+
+		const loop = (now: number) => {
+			if (!running) return;
+			// Clamp dt so a background tab's long frame cannot teleport the ball.
+			const dt = Math.min(0.04, (now - last) / 1000);
+			last = now;
+			step(dt);
+			render();
+			raf = requestAnimationFrame(loop);
+		};
+
+		const play = () => {
+			if (running || !state.visible || document.hidden) return;
+			running = true;
+			last = performance.now();
+			raf = requestAnimationFrame(loop);
+		};
+
+		const stop = () => {
+			running = false;
+			cancelAnimationFrame(raf);
+		};
+
+		// Only run while the hero is on screen and the tab is visible.
+		new IntersectionObserver(
+			([entry]) => {
+				state.visible = entry.isIntersecting;
+				if (state.visible) play();
+				else stop();
+			},
+			{ threshold: 0.05 },
+		).observe(host);
+
+		document.addEventListener("visibilitychange", () => (document.hidden ? stop() : play()));
+
+		window.addEventListener("resize", () => {
+			resize();
+			if (!running) render();
+		});
+
+		resize();
+		serve(Math.random() < 0.5 ? -1 : 1);
+
+		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			// Static frame: the game exists, it just does not move.
+			state.ball.x = gw / 2 - BALL / 2 + 20;
+			state.ball.y = gh / 2 - BALL / 2;
+			render();
+		} else {
+			play();
+		}
+	}
+</script>
+
+<style>
+	.pong {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
+		/* The whole point: upscale the low-res canvas in hard blocks. */
+		image-rendering: pixelated;
+	}
+</style>

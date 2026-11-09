@@ -42,6 +42,7 @@ src/
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
 │   ├── Marquee.astro    skills ticker under the hero
+│   ├── PongGame.astro   playable pixel pong behind the hero (canvas, no deps)
 │   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
 │   ├── Icon.astro       inline brand icons (mail, github, linkedin, htb, thm)
@@ -95,6 +96,17 @@ link, never set on the icon.
 **Motion**: every animation gates on `prefers-reduced-motion` — typing, the
 mark-draw stroke, the ticker, reveal. Nothing may park content at opacity 0
 when motion is reduced or JS is off.
+
+**The background pong** (`PongGame.astro`) plays behind the hero content. It
+is a plain canvas at ~4 CSS px per game pixel, upscaled with
+`image-rendering: pixelated`; no physics or rendering libraries. Colours are
+re-read from the theme tokens whenever `data-theme` changes. Gameplay: AI
+paddle right, reader's paddle left — mouse/touch anywhere on the hero, or
+W/S/arrow keys while the hero is hovered (the hover gate is what keeps arrow
+keys scrolling the page elsewhere). The loop stops via IntersectionObserver +
+`visibilitychange` when the hero is off-screen or the tab hidden, and never
+starts under reduced motion (one static frame instead). The canvas is
+`pointer-events: none`; pointer tracking lives on the hero section.
 
 **Hairlines, not shadows.** Depth is `var(--elevation)` (a 1px outline); hover
 steps to `--elevation-hover` plus a 2px lift. No offset shadows, no blur
