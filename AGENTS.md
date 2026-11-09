@@ -42,7 +42,7 @@ src/
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
 │   ├── Bubbles.astro    ambient pixel bubbles rising in the hero background
-│   ├── PixelPals.astro  small water animals floating up through the hero
+│   ├── PixelBits.astro  random binary strings floating up through the hero
 │   ├── PongGame.astro   playable pixel pong easter egg — unlocked by the Konami code
 │   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
@@ -108,14 +108,13 @@ frosted card (`.hero-panel` in `Hero.astro`) — 90% `color-mix` of `--surface`
 plus `backdrop-filter: blur(8px)` — with the house hairline elevation. Any new
 hero decoration must keep that panel between it and the text.
 
-**Pixel pals** (`PixelPals.astro`): small water animals (fish, jellyfish,
-octopus, crab, whale) render at build time into
-`<template>` elements; the client script clones one every 9–18 s and CSS
-floats it UP through the hero like the bubbles — spawn below the bottom edge,
-slow linear rise plus an alternate-sway inner span, `animationend` frees it.
-Their colours are literal hex, NOT `--t-*` tokens — the crab stays red in
-every palette (the one sanctioned exception to the token rule).
-Spawns pause off-screen, hidden tabs, reduced motion, and while pong is on.
+**Pixel bits** (`PixelBits.astro`): random binary strings (3–6 digits) drawn
+with the shared 3x5 pixel font on the client and floated UP through the hero
+like the bubbles — spawn below the bottom edge, slow linear rise plus an
+alternate-sway inner span, `animationend` frees it. Colour is `currentColor`
+through `var(--text-muted)` / `var(--brand)` on the span, so palette switches
+re-tint it for free. Spawns pause off-screen, hidden tabs, reduced motion, and
+while pong is on.
 
 **The background pong** (`PongGame.astro`) is an easter egg, locked until the
 Konami code (↑↑↓↓←→←→ B A) sets `data-pong="on"` on `<html>` — then it plays

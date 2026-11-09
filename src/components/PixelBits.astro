@@ -1,0 +1,159 @@
+---
+/**
+ * Pixel bits: random binary strings that float UP through the hero, mixed in
+ * with the bubbles — they surface below the bottom edge, rise slowly with a
+ * gentle sway, exit at the top, and free themselves. One surfaces every 9–18 s,
+ * so a few are usually drifting at once.
+ *
+ * The digits are drawn with the shared 3x5 pixel font (`src/lib/pixel-font.ts`)
+ * on the client — no templates needed since the content is generated, not
+ * illustrated. Each string is an SVG of rects with `fill="currentColor"`; the
+ * span carries `var(--text-muted)` (most) or `var(--brand)` (~25%), so the
+ * bits re-tint live when the palette switches.
+ *
+ * Spawns are skipped under reduced motion and while the pong easter egg owns
+ * the background.
+ */
+---
+
+<div class="bits" aria-hidden="true"></div>
+
+<script>
+	import { GLYPHS, CHAR_W, CHAR_H, ADVANCE, textWidth } from "../lib/pixel-font";
+
+	const host = document.getElementById("top");
+	const layer = document.querySelector<HTMLElement>(".bits");
+
+	if (host && layer) {
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		let visible = true;
+
+		new IntersectionObserver(([entry]) => (visible = entry.isIntersecting), {
+			threshold: 0.05,
+		}).observe(host);
+
+		const randomBits = (len: number): string =>
+			Array.from({ length: len }, () => (Math.random() < 0.5 ? "0" : "1")).join("");
+
+		/** Draw a string as crisp SVG rects using the shared pixel font. */
+		const buildSvg = (text: string): string => {
+			let rects = "";
+			for (const [i, char] of [...text].entries()) {
+				const rows = GLYPHS[char.toUpperCase()]!;
+				for (let y = 0; y < CHAR_H; y++) {
+					const row = rows[y]!;
+					for (let x = 0; x < CHAR_W; x++) {
+						if (row & (1 << (CHAR_W - 1 - x))) {
+							rects += `<rect x="${i * ADVANCE + x}" y="${y}" width="1.02" height="1.02"/>`;
+						}
+					}
+				}
+			}
+			return (
+				`<svg viewBox="0 0 ${textWidth(text)} ${CHAR_H}" fill="currentColor"` +
+				` shape-rendering="crispEdges">${rects}</svg>`
+			);
+		};
+
+		/**
+		 * Launch one string from below the bottom edge. CSS carries it up through
+		 * the hero at bubble speed; `animationend` frees it at the top.
+		 */
+		const spawn = () => {
+			const sway = document.createElement("span");
+			sway.className = "bit-sway";
+			// Each string sways on its own rhythm, like the bubbles' wobble.
+			sway.style.animationDuration = `${2.4 + Math.random() * 2}s`;
+			sway.innerHTML = buildSvg(randomBits(3 + Math.floor(Math.random() * 4)));
+
+			const bit = document.createElement("span");
+			bit.className = Math.random() < 0.25 ? "bit brand" : "bit";
+			bit.style.left = `${3 + Math.random() * 88}%`;
+			bit.style.animationDuration = `${16 + Math.random() * 8}s`;
+			bit.append(sway);
+			layer.append(bit);
+
+			bit.addEventListener("animationend", () => bit.remove(), { once: true });
+		};
+
+		const schedule = () => {
+			window.setTimeout(
+				() => {
+					// The pong easter egg gets the spotlight when it is on.
+					if (visible && !document.hidden && document.documentElement.dataset.pong !== "on")
+						spawn();
+					schedule();
+				},
+				9000 + Math.random() * 9000,
+			);
+		};
+
+		if (!reduced) schedule();
+	}
+</script>
+
+<style>
+	.bits {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	/*
+		.bit spans are created by the script at runtime, so they never receive
+		Astro's scoping attribute — these rules must stay :global. Colour rides
+		on currentColor through the CSS vars, so palette switches re-tint free.
+	*/
+	:global(.bit) {
+		position: absolute;
+		bottom: -4rem;
+		color: var(--text-muted);
+		opacity: 0.55;
+		animation: bit-rise linear both;
+		will-change: transform;
+	}
+
+	:global(.bit.brand) {
+		color: var(--brand);
+		opacity: 0.85;
+	}
+
+	:global(.bit-sway) {
+		display: block;
+		animation: bit-sway ease-in-out infinite alternate;
+	}
+
+	:global(.bit svg) {
+		display: block;
+		height: clamp(10px, 1.3vw, 16px);
+		width: auto;
+	}
+
+	/* Rise the full height of the hero and clear the top edge. */
+	@keyframes bit-rise {
+		from {
+			transform: translateY(0);
+		}
+		to {
+			transform: translateY(calc(-100svh - 8rem));
+		}
+	}
+
+	@keyframes bit-sway {
+		from {
+			transform: translateX(-6px);
+		}
+		to {
+			transform: translateX(6px);
+		}
+	}
+
+	/* The script already refuses to spawn; this also hides any edge case. */
+	@media (prefers-reduced-motion: reduce) {
+		.bits {
+			display: none;
+		}
+	}
+</style>
