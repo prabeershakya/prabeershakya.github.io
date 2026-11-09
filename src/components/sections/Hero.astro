@@ -37,10 +37,7 @@ import PixelBits from "../PixelBits.astro";
 					<span class="chip">
 						<span class="chip-dot"></span> open to internships
 					</span>
-					<span class="chip">
-						<span class="chip-dot"></span> currently: pentesting
-					</span>
-					<span class="chip">toolkit: nmap · burp · wireshark</span>
+					<span class="chip">pentesting · ctf</span>
 				</div>
 
 				<div class="hero-cta reveal">
@@ -57,12 +54,7 @@ import PixelBits from "../PixelBits.astro";
 				<div class="terminal">
 					<TerminalArt />
 				</div>
-				<p class="hero-quote">
-					<span class="mono status-line">
-						<span class="pulse" aria-hidden="true"></span> online / learning
-					</span>
-					learning the depth of the web, one strand at a time.
-				</p>
+				<p class="hero-quote">learning the depth of the web, one strand at a time.</p>
 			</div>
 		</div>
 	</div>
@@ -154,8 +146,8 @@ import PixelBits from "../PixelBits.astro";
 	}
 
 	.hero-right {
-		flex: 0 1 40%;
-		max-width: min(100%, 420px);
+		flex: 0 1 42%;
+		max-width: min(100%, 460px);
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -180,41 +172,6 @@ import PixelBits from "../PixelBits.astro";
 		font-size: 0.82rem;
 		color: var(--text-muted);
 		line-height: 1.7;
-	}
-
-	.status-line {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--text-secondary);
-		margin-right: 0.5rem;
-	}
-
-	.pulse {
-		width: 8px;
-		height: 8px;
-		flex: none;
-		background: var(--brand);
-	}
-
-	@media (prefers-reduced-motion: no-preference) {
-		.pulse {
-			animation: pulse 2.4s cubic-bezier(0.2, 0, 0, 1) infinite;
-		}
-
-		@keyframes pulse {
-			0% {
-				box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 70%, transparent);
-			}
-			70% {
-				box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 0%, transparent);
-			}
-			100% {
-				box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 0%, transparent);
-			}
-		}
 	}
 
 	@media (max-width: 860px) {

@@ -1,49 +1,84 @@
 ---
 /**
- * The omarchy-style living hero scene: a pixel terminal that types commands,
- * prints output, and loops.
+ * The hero terminal, redesigned as a LIVE STATUS MONITOR: a bigger pixel
+ * window titled STATUS.SH that boots a dashboard of facts row by row, then
+ * keeps the STATUS row cycling like a hud. Data comes from the real data
+ * files — total CTF events entered and best finish come from `teams.ts`, so
+ * a build refresh updates the screen.
  *
- * SSR renders one complete static frame (first command + output + cursor), so
- * the art is fully present without JavaScript and under reduced motion — the
- * script only takes over the cycle when it can run. Text is drawn with the
- * shared 3x5 pixel font (`src/lib/pixel-font.ts`); frame and title bar are
- * plain rects. All colours are theme tokens, so the scene re-tints with the
- * palette switcher.
+ * SSR renders one complete static frame (the full dashboard, cursor parked at
+ * the end of the STATUS value), so the art is fully present without JavaScript
+ * and under reduced motion — the script only takes over the boot + cycle when
+ * it can run. Text is drawn with the shared 3x5 pixel font
+ * (`src/lib/pixel-font.ts`); frame and title bar are plain rects. All colours
+ * are theme tokens, so the scene re-tints with the palette switcher.
  *
- * The sequence lives in the script AND the frontmatter (frontmatter renders
- * the static first frame). Keep the first entry of `SEQUENCE` and `FIRST_FRAME`
- * the same pair, or first paint will not match the first loop step.
+ * The frontmatter computes the dashboard and hands it to the script through a
+ * `data-dashboard` attribute — one source of truth for the data (the script
+ * cannot import `teams.ts`; it pulls in `node:fs`). Geometry and colours are
+ * the only things mirrored in the script, and the frontmatter throws the
+ * build if a character has no glyph, so a bad edit fails loudly.
  */
+import { teams, placeLabel, type TeamResult } from "../data/teams";
 import { GLYPHS, ADVANCE, CHAR_W, CHAR_H, textWidth } from "../lib/pixel-font";
 
 /* ------------------------------ geometry ---------------------------------- */
 
-const COLS = 64;
-const ROWS = 20;
+const COLS = 88;
+const ROWS = 35;
 /** Text window: inside the 1-cell frame, under the 2-row title bar. */
 const PAD = 2;
 const TEXT_TOP = 4;
-/** Two lines visible: command + output. */
-const LINE_ROWS: [number, number] = [TEXT_TOP, TEXT_TOP + CHAR_H + 1];
-const PROMPT = "> ";
+/** Dashboard pitch: one glyph block (5 rows) plus one blank row. */
+const PITCH = 6;
+/** Label column width, in characters (labels are padEnd-ed to this). */
+const LABEL_W = 8;
+const LABEL_CELLS = textWidth(" ".repeat(LABEL_W));
 
-/* ----------------------------- the sequence -------------------------------- */
+/* -------------------------------- the data --------------------------------- */
 
-type Step = { cmd: string; out: string };
+const totalEntered = teams.reduce((n, t) => n + t.totalEvents, 0);
+const allResults = teams.flatMap((t) => t.results);
+const best = allResults.reduce<TeamResult | undefined>(
+	(b, r) => (b == null || r.place < b.place ? r : b),
+	undefined,
+);
+const bestScale = best?.scale?.match(/\d+/)?.[0];
+const bestLabel = best
+	? `${placeLabel(best.place).toUpperCase()}${bestScale ? ` OF ${bestScale}` : ""}`
+	: "-";
 
-const SEQUENCE: Step[] = [
-	{ cmd: "whoami", out: "prabeer" },
-	{ cmd: "cat flag.txt", out: "flag{p1xel_pwn}" },
-	{ cmd: "nmap -sv", out: "22,80,443 open" },
-	{ cmd: "sudo exploit", out: "access granted" },
+type Row = readonly [label: string, value: string];
+
+const DASH: Row[] = [
+	["FOCUS", "PENTEST+CTF"],
+	["EVENTS", `${totalEntered} ENTERED`],
+	["BEST", bestLabel],
+	["PROFILE", "HTB+THM"],
+	["STATUS", "OPEN TO WORK"],
 ];
 
+const STATUSES: string[] = [
+	"OPEN TO WORK",
+	"SOLVING CTF",
+	"LEARN: BURP",
+	"ON A HTB BOX",
+	"READING RTFM",
+];
+
+const TITLE = "STATUS.SH";
+
 /*
- * Every character used by the sequence must exist in the pixel font — the
- * build fails here rather than shipping blank glyphs.
- */
-for (const { cmd, out } of SEQUENCE) {
-	for (const ch of `${PROMPT}${cmd}${out}`.toUpperCase()) {
+	Every character used on screen must exist in the pixel font — the build
+	fails here rather than shipping blank glyphs.
+*/
+for (const [label, value] of DASH) {
+	for (const ch of `${label}${value}${TITLE}`.toUpperCase()) {
+		if (!GLYPHS[ch]) throw new Error(`TerminalArt: glyph missing for "${ch}"`);
+	}
+}
+for (const status of STATUSES) {
+	for (const ch of status.toUpperCase()) {
 		if (!GLYPHS[ch]) throw new Error(`TerminalArt: glyph missing for "${ch}"`);
 	}
 }
@@ -57,7 +92,7 @@ interface Cell {
 }
 
 const frameCells: Cell[] = [];
-/** Outer frame. */
+/** Outer frame + the two title-bar rules. */
 for (let x = 0; x < COLS; x++) {
 	frameCells.push({ x, y: 0, fill: "var(--border-strong)" });
 	frameCells.push({ x, y: 2, fill: "var(--border-strong)" });
@@ -67,7 +102,7 @@ for (let y = 0; y < ROWS; y++) {
 	frameCells.push({ x: 0, y, fill: "var(--border-strong)" });
 	frameCells.push({ x: COLS - 1, y, fill: "var(--border-strong)" });
 }
-/** Title bar between the rules, with three window dots. */
+/** Title bar between the rules: three window dots, then the running title. */
 const DOTS: [number, string][] = [
 	[3, "#ff6b6b"],
 	[5, "#ffd93d"],
@@ -97,12 +132,19 @@ function textCells(text: string, col: number, row: number, fill: string): Cell[]
 	return cells;
 }
 
-const first = SEQUENCE[0];
+const [statusLabel, statusValue] = DASH[DASH.length - 1]!;
 const staticCells: Cell[] = [
-	...textCells(`${PROMPT}${first.cmd}`, PAD, LINE_ROWS[0], "var(--brand)"),
-	...textCells(first.out, PAD, LINE_ROWS[1], "var(--text-secondary)"),
+	...textCells(TITLE, 11, 1, "var(--text-secondary)"),
+	...DASH.flatMap(([label, value], i) => {
+		const top = TEXT_TOP + i * PITCH;
+		return [
+			...textCells(label.padEnd(LABEL_W), PAD, top, "var(--brand)"),
+			...textCells(value, PAD + LABEL_CELLS, top, "var(--text-secondary)"),
+		];
+	}),
 ];
-const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
+const cursorCol = PAD + textWidth(statusLabel.padEnd(LABEL_W) + statusValue) + 1;
+const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 ---
 
 <svg
@@ -110,7 +152,8 @@ const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
 	viewBox={`0 0 ${COLS} ${ROWS}`}
 	shape-rendering="crispEdges"
 	role="img"
-	aria-label="Animated pixel terminal typing security commands"
+	aria-label="Live pixel status monitor showing CTF and learning stats"
+	data-dashboard={JSON.stringify({ rows: DASH, statuses: STATUSES })}
 >
 	{frameCells.map((cell) => (
 		<rect x={cell.x} y={cell.y} width={1.02} height={1.02} fill={cell.fill} />
@@ -123,7 +166,7 @@ const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
 	<rect
 		class="cursor"
 		x={cursorCol}
-		y={LINE_ROWS[0]}
+		y={cursorRow}
 		width={CHAR_W}
 		height={CHAR_H}
 		fill="var(--brand)"
@@ -131,41 +174,37 @@ const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
 </svg>
 
 <script>
-	import { GLYPHS, ADVANCE, CHAR_W, CHAR_H, textWidth } from "../lib/pixel-font";
+	import { GLYPHS, ADVANCE, textWidth } from "../lib/pixel-font";
 
 	/*
-		Mirrors the frontmatter geometry and sequence. The two stay in sync
-		because the frontmatter throws the build if a glyph is missing, and a
-		geometry drift here would show up immediately as a broken frame.
+		Mirrors the frontmatter geometry. The dashboard DATA itself arrives via
+		the data-dashboard attribute — the frontmatter is the single source of
+		truth, and it throws the build if any character has no glyph.
 	*/
 	const PAD = 2;
 	const TEXT_TOP = 4;
-	const LINE_ROWS: [number, number] = [TEXT_TOP, TEXT_TOP + CHAR_H + 1];
-	const PROMPT = "> ";
+	const PITCH = 6;
+	const LABEL_W = 8;
+	const LABEL_CELLS = textWidth(" ".repeat(LABEL_W));
 
-	const SEQUENCE: { cmd: string; out: string }[] = [
-		{ cmd: "whoami", out: "prabeer" },
-		{ cmd: "cat flag.txt", out: "flag{p1xel_pwn}" },
-		{ cmd: "nmap -sv", out: "22,80,443 open" },
-		{ cmd: "sudo exploit", out: "access granted" },
-	];
-
-	const TYPE_MS = 90;
-	const OUTPUT_MS = 450;
-	const HOLD_MS = 1600;
-	const FINAL_HOLD_MS = 2600;
+	const TYPE_MS = 34;
+	const ROW_GAP_MS = 150;
+	const CYCLE_MS = 3200;
 
 	const svg = document.querySelector<SVGElement>(".terminal-art");
-	if (svg && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+	const dashboard = JSON.parse(svg?.dataset.dashboard ?? "null") as {
+		rows: [string, string][];
+		statuses: string[];
+	} | null;
+
+	if (svg && dashboard && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 		const screen = svg.querySelector<SVGElement>(".screen");
 		const cursor = svg.querySelector<SVGRectElement>(".cursor");
 		const NS = "http://www.w3.org/2000/svg";
-
 		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-		/** Draws one line of pixel text into the screen group. */
-		const draw = (text: string, row: number, fill: string) => {
-			const col = PAD;
+		/** Draws one line of pixel text into a group. */
+		const draw = (text: string, row: number, fill: string, parent: SVGElement) => {
 			for (const [i, ch] of [...text.toUpperCase()].entries()) {
 				const glyph = GLYPHS[ch];
 				if (!glyph) continue;
@@ -173,20 +212,16 @@ const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
 					for (const bit of [2, 1, 0]) {
 						if ((bits >> bit) & 1) {
 							const rect = document.createElementNS(NS, "rect");
-							rect.setAttribute("x", String(col + i * ADVANCE + (2 - bit)));
+							rect.setAttribute("x", String(PAD + i * ADVANCE + (2 - bit)));
 							rect.setAttribute("y", String(row + gy));
 							rect.setAttribute("width", "1.02");
 							rect.setAttribute("height", "1.02");
 							rect.setAttribute("fill", fill);
-							screen?.appendChild(rect);
+							parent.appendChild(rect);
 						}
 					}
 				}
 			}
-		};
-
-		const clear = () => {
-			while (screen?.firstChild) screen.firstChild.remove();
 		};
 
 		const parkCursor = (col: number, row: number) => {
@@ -194,31 +229,47 @@ const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
 			cursor?.setAttribute("y", String(row));
 		};
 
+		const groups: SVGElement[] = [];
+
+		/**
+		 * Types one dashboard row: label appears at once (brand colour), the
+		 * value types after it (secondary colour), cursor riding its tail.
+		 */
+		const typeRow = async (i: number, label: string, value: string) => {
+			const top = TEXT_TOP + i * PITCH;
+			let g = groups[i];
+			if (!g) {
+				g = document.createElementNS(NS, "g");
+				screen?.appendChild(g);
+				groups[i] = g;
+			}
+			while (g.firstChild) g.firstChild.remove();
+			draw(label.padEnd(LABEL_W), top, "var(--brand)", g);
+
+			const start = PAD + LABEL_CELLS;
+			for (const [n] of [...value].entries()) {
+				g.querySelector(".value")?.remove();
+				const valueG = document.createElementNS(NS, "g");
+				valueG.setAttribute("class", "value");
+				g.appendChild(valueG);
+				draw(value.slice(0, n + 1), top, "var(--text-secondary)", valueG);
+				parkCursor(start + textWidth(value.slice(0, n + 1)) + 1, top);
+				await sleep(TYPE_MS);
+			}
+		};
+
 		const run = async () => {
-			for (;;) {
-				for (const step of SEQUENCE) {
-					clear();
-					const command = `${PROMPT}${step.cmd}`;
+			// Boot: reveal the dashboard row by row.
+			for (const [i, [label, value]] of dashboard.rows.entries()) {
+				await typeRow(i, label, value);
+				await sleep(ROW_GAP_MS);
+			}
 
-					// Type the command character by character, cursor on its tail.
-					for (const [i] of [...command].entries()) {
-						clear();
-						draw(command.slice(0, i + 1), LINE_ROWS[0], "var(--brand)");
-						parkCursor(PAD + textWidth(command.slice(0, i + 1)) + 1, LINE_ROWS[0]);
-						await sleep(TYPE_MS);
-					}
-
-					// Print the output line, cursor parked under it.
-					await sleep(OUTPUT_MS);
-					draw(step.out, LINE_ROWS[1], "var(--text-secondary)");
-					parkCursor(PAD + textWidth(step.out) + 1, LINE_ROWS[1]);
-					await sleep(HOLD_MS);
-				}
-				// Park on a bare prompt before the loop restarts.
-				clear();
-				draw(PROMPT, LINE_ROWS[0], "var(--brand)");
-				parkCursor(PAD + textWidth(PROMPT) + 1, LINE_ROWS[0]);
-				await sleep(FINAL_HOLD_MS);
+			// Live: the STATUS value keeps cycling, everything else stays put.
+			const statusRow = dashboard.rows.length - 1;
+			for (let s = 1; ; s = (s + 1) % dashboard.statuses.length) {
+				await sleep(CYCLE_MS);
+				await typeRow(statusRow, dashboard.rows[statusRow]![0], dashboard.statuses[s]!);
 			}
 		};
 
