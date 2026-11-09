@@ -1,18 +1,18 @@
 ---
 /**
- * Pixel pals: little creatures that pop up in the hero at random intervals —
- * a Magikarp here, a Psyduck there, a Starmie, the odd Pokéball. Pure
- * ambience: they surface somewhere in the background layer (z 0, behind the
- * frosted hero panel, so they peek around it and blur softly behind its
- * glass), hold for a few seconds, and are gone.
+ * Pixel pals: full-body sprites that float UP through the hero, mixed in with
+ * the bubbles — they surface below the bottom edge, rise slowly with a gentle
+ * sway, exit at the top, and free themselves. One surfaces every 9–18 s, so a
+ * few are usually drifting at once.
  *
  * The sprites are drawn once at build time into <template> elements via
- * PixelArt; the client script only clones a template, positions it, and
- * removes it. Identity colours are literal hex on purpose — Psyduck must stay
- * yellow in every palette, so these do not ride the --t-* tokens.
+ * PixelArt; the client script only clones a template, positions it, and lets
+ * CSS carry it up. Identity colours are literal hex on purpose — Psyduck must
+ * stay yellow and Squirtle blue in every palette, so these do not ride the
+ * --t-* tokens (the one sanctioned exception to the token rule).
  *
- * Spawns are skipped under reduced motion, while the tab is hidden, and while
- * the pong easter egg owns the background.
+ * Spawns are skipped under reduced motion and while the pong easter egg owns
+ * the background.
  */
 import PixelArt from "./PixelArt.astro";
 
@@ -35,10 +35,64 @@ const PALS: Pal[] = [
 			"yyykkyyyykkyyy",
 			"yyyyyyyyyyyyyy",
 			".ywwwwwwwwwwy.",
-			".ywwwwwwwwwwy.",
 			"..ywwwwwwwwy..",
 			"...yyyyyyyy...",
-			"....yyyyyy....",
+			"..yyyyyyyyyy..",
+			".yyyyyyyyyyyy.",
+			".yyyyyyyyyyyy.",
+			"..yyyyyyyyyy..",
+			"...yy....yy...",
+			"..www....www..",
+		],
+	},
+	{
+		name: "pokeball",
+		palette: { k: "#26221d", r: "#ff5252", w: "#f8f4e3" },
+		map: [
+			"..kkkkk..",
+			".krrrrrk.",
+			"krrrrrrrk",
+			"krrrrrrrk",
+			"kkkkkkkkk",
+			"kkkwwwkkk",
+			"kwwwwwwwk",
+			".kwwwwwk.",
+			"..kkkkk..",
+		],
+	},
+	{
+		name: "mew",
+		palette: { p: "#ffb7d5", e: "#3558c8" },
+		map: [
+			".pp..........pp.",
+			".ppp........ppp.",
+			".pppp......pppp.",
+			"..pppppppppppp..",
+			"..pppppppppppp..",
+			"..ppeppppppepp..",
+			"..pppppppppppp..",
+			"...pppppppppp...",
+			"...ppppppppppp..",
+			"....pppppppp.p..",
+			"....pppppppp.p..",
+			"...ppppppp..pp..",
+			"...pp..ppp......",
+			"..pp....pp......",
+		],
+	},
+	{
+		name: "magikarp",
+		palette: { o: "#f2762e", w: "#f8f4e3", k: "#26221d" },
+		map: [
+			"...ooooo.....",
+			"..ooooooo.o..",
+			".oooooooo.o..",
+			".koooooo.oo..",
+			"oooooooooo.o.",
+			".woooooo..oo.",
+			".wwoooo...o..",
+			"..wwoo.......",
+			"...oo........",
 		],
 	},
 	{
@@ -59,32 +113,23 @@ const PALS: Pal[] = [
 		],
 	},
 	{
-		name: "pokeball",
-		palette: { k: "#26221d", r: "#ff5252", w: "#f8f4e3" },
+		name: "squirtle",
+		palette: { b: "#7fc4e8", s: "#b5713f", w: "#f8f4e3", k: "#26221d" },
 		map: [
-			"..kkkkk..",
-			".krrrrrk.",
-			"krrrrrrrk",
-			"krrrrrrrk",
-			"kkkkkkkkk",
-			"kkkwwwkkk",
-			"kwwwwwwwk",
-			".kwwwwwk.",
-			"..kkkkk..",
-		],
-	},
-	{
-		name: "magikarp",
-		palette: { o: "#f2762e", w: "#f8f4e3", k: "#26221d" },
-		map: [
-			"...ooooo.....",
-			"..ooooooo.o..",
-			".oooooooo.o..",
-			".koooooo.oo..",
-			"oooooooooo.o.",
-			".oooooooo.oo.",
-			"..oooooo..o..",
-			"...oooo......",
+			"....bbbbbbbb....",
+			"..bbbbbbbbbbbb..",
+			".bbbbbbbbbbbbbb.",
+			".bbkkbbbbbbkkbb.",
+			".bbbbbbbbbbbbbb.",
+			"..bbbbbbbbbbbb..",
+			"...bbbbbbbbbb...",
+			"..bssssssssssb..",
+			".bbsswwwwwwssbb.",
+			".bbswwwwwwwwsbb.",
+			".bbswwwwwwwwsbb.",
+			"..bssssssssssb..",
+			".bbb........bbb.",
+			".bb..........bb.",
 		],
 	},
 ];
@@ -111,24 +156,29 @@ const PALS: Pal[] = [
 			threshold: 0.05,
 		}).observe(host);
 
+		/**
+		 * Launch one pal from below the bottom edge. CSS carries it up through
+		 * the hero at bubble speed; `animationend` frees it at the top.
+		 */
 		const spawn = () => {
 			const tpl = templates[Math.floor(Math.random() * templates.length)]!;
 			const sprite = tpl.content.firstElementChild?.cloneNode(true);
 			if (!sprite) return;
 
+			const sway = document.createElement("span");
+			sway.className = "pal-sway";
+			// Each pal sways on its own rhythm, like the bubbles' wobble.
+			sway.style.animationDuration = `${2.4 + Math.random() * 2}s`;
+			sway.append(sprite);
+
 			const pal = document.createElement("span");
 			pal.className = "pal";
 			pal.style.left = `${3 + Math.random() * 88}%`;
-			pal.style.top = `${6 + Math.random() * 74}%`;
-			pal.append(sprite);
+			pal.style.animationDuration = `${16 + Math.random() * 8}s`;
+			pal.append(sway);
 			layer.append(pal);
 
-			// Hold a few seconds, then step back out and free the DOM.
-			const hold = 2600 + Math.random() * 2600;
-			setTimeout(() => {
-				pal.classList.add("bye");
-				setTimeout(() => pal.remove(), 240);
-			}, hold);
+			pal.addEventListener("animationend", () => pal.remove(), { once: true });
 		};
 
 		const schedule = () => {
@@ -162,38 +212,45 @@ const PALS: Pal[] = [
 	*/
 	:global(.pal) {
 		position: absolute;
-		animation: pal-pop 260ms steps(2, end) both;
+		bottom: -6rem;
+		animation: pal-rise linear both;
+		will-change: transform;
 	}
 
-	:global(.pal.bye) {
-		animation: pal-drop 220ms steps(2, end) both;
+	:global(.pal-sway) {
+		display: block;
+		animation: pal-sway ease-in-out infinite alternate;
 	}
 
 	:global(.pal svg) {
+		display: block;
 		width: clamp(48px, 6vw, 72px);
 		height: auto;
 	}
 
-	/* Steps, not easing: retro sprites appear in frames, not tweens. */
-	@keyframes pal-pop {
+	/* Rise the full height of the hero and clear the top edge. */
+	@keyframes pal-rise {
 		from {
-			opacity: 0;
-			transform: translateY(8px) scale(0.6);
+			transform: translateY(0);
 		}
 		to {
-			opacity: 1;
-			transform: none;
+			transform: translateY(calc(-100svh - 12rem));
 		}
 	}
 
-	@keyframes pal-drop {
+	@keyframes pal-sway {
 		from {
-			opacity: 1;
-			transform: none;
+			transform: translateX(-6px);
 		}
 		to {
-			opacity: 0;
-			transform: translateY(8px) scale(0.6);
+			transform: translateX(6px);
+		}
+	}
+
+	/* The script already refuses to spawn; this also hides any edge case. */
+	@media (prefers-reduced-motion: reduce) {
+		.pals {
+			display: none;
 		}
 	}
 </style>

@@ -110,9 +110,11 @@ frosted card (`.hero-panel` in `Hero.astro`) — 90% `color-mix` of `--surface`
 plus `backdrop-filter: blur(8px)` — with the house hairline elevation. Any new
 hero decoration must keep that panel between it and the text.
 
-**Pixel pals** (`PixelPals.astro`): sprites render at build time into
-`<template>` elements; the client script clones one every 9–18 s, drops it at
-a random spot on the hero's z-0 layer, and removes it after a few seconds.
+**Pixel pals** (`PixelPals.astro`): full-body Pokémon sprites (Psyduck,
+Pokéball, Mew, Magikarp, Starmie, Squirtle) render at build time into
+`<template>` elements; the client script clones one every 9–18 s and CSS
+floats it UP through the hero like the bubbles — spawn below the bottom edge,
+slow linear rise plus an alternate-sway inner span, `animationend` frees it.
 Their identity colours are literal hex, NOT `--t-*` tokens — Psyduck stays
 yellow in every palette (the one sanctioned exception to the token rule).
 Spawns pause off-screen, hidden tabs, reduced motion, and while pong is on.
