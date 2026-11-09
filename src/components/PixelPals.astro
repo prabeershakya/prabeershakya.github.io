@@ -1,14 +1,14 @@
 ---
 /**
- * Pixel pals: full-body sprites that float UP through the hero, mixed in with
- * the bubbles — they surface below the bottom edge, rise slowly with a gentle
- * sway, exit at the top, and free themselves. One surfaces every 9–18 s, so a
- * few are usually drifting at once.
+ * Pixel pals: small water creatures that float UP through the hero, mixed in
+ * with the bubbles — they surface below the bottom edge, rise slowly with a
+ * gentle sway, exit at the top, and free themselves. One surfaces every 9–18 s,
+ * so a few are usually drifting at once.
  *
  * The sprites are drawn once at build time into <template> elements via
  * PixelArt; the client script only clones a template, positions it, and lets
- * CSS carry it up. Identity colours are literal hex on purpose — Psyduck must
- * stay yellow and Squirtle blue in every palette, so these do not ride the
+ * CSS carry it up. Their colours are literal hex on purpose — the crab must
+ * stay red and the whale blue in every palette, so these do not ride the
  * --t-* tokens (the one sanctioned exception to the token rule).
  *
  * Spawns are skipped under reduced motion and while the pong easter egg owns
@@ -24,112 +24,73 @@ interface Pal {
 
 const PALS: Pal[] = [
 	{
-		name: "psyduck",
-		palette: { y: "#ffd93d", w: "#f8f4e3", k: "#26221d" },
+		name: "fish",
+		palette: { o: "#f2762e", k: "#26221d" },
 		map: [
-			"..k...k...k...",
-			"..k...k...k...",
-			"..yyyyyyyyyy..",
-			".yyyyyyyyyyyy.",
-			"yyyyyyyyyyyyyy",
-			"yyykkyyyykkyyy",
-			"yyyyyyyyyyyyyy",
-			".ywwwwwwwwwwy.",
-			"..ywwwwwwwwy..",
-			"...yyyyyyyy...",
-			"..yyyyyyyyyy..",
-			".yyyyyyyyyyyy.",
-			".yyyyyyyyyyyy.",
-			"..yyyyyyyyyy..",
-			"...yy....yy...",
-			"..www....www..",
+			"...oooo.....",
+			"..oooooo..o.",
+			".kooooooo.oo",
+			".ooooooooooo",
+			"..oooooo..o.",
+			"...oooo.....",
 		],
 	},
 	{
-		name: "pokeball",
-		palette: { k: "#26221d", r: "#ff5252", w: "#f8f4e3" },
+		name: "jellyfish",
+		palette: { j: "#f7a8c4" },
 		map: [
-			"..kkkkk..",
-			".krrrrrk.",
-			"krrrrrrrk",
-			"krrrrrrrk",
-			"kkkkkkkkk",
-			"kkkwwwkkk",
-			"kwwwwwwwk",
-			".kwwwwwk.",
-			"..kkkkk..",
+			"..jjjjjj..",
+			".jjjjjjjj.",
+			".jjjjjjjj.",
+			"jjjjjjjjjj",
+			"jjjjjjjjjj",
+			".jj.jj.jj.",
+			"..j..j..j.",
+			"..j..j..j.",
+			".j..j..j..",
+			"j..j..j...",
 		],
 	},
 	{
-		name: "mew",
-		palette: { p: "#ffb7d5", e: "#3558c8" },
+		name: "octopus",
+		palette: { o: "#a06ee0", k: "#26221d" },
 		map: [
-			".pp..........pp.",
-			".ppp........ppp.",
-			".pppp......pppp.",
-			"..pppppppppppp..",
-			"..pppppppppppp..",
-			"..ppeppppppepp..",
-			"..pppppppppppp..",
-			"...pppppppppp...",
-			"...ppppppppppp..",
-			"....pppppppp.p..",
-			"....pppppppp.p..",
-			"...ppppppp..pp..",
-			"...pp..ppp......",
-			"..pp....pp......",
+			"..oooooo..",
+			".oooooooo.",
+			".ookooko..",
+			".oooooooo.",
+			"..oooooo..",
+			".o.o..o.o.",
+			".o.o..o.o.",
+			"o..o..o..o",
+			"o..o..o..o",
 		],
 	},
 	{
-		name: "magikarp",
-		palette: { o: "#f2762e", w: "#f8f4e3", k: "#26221d" },
+		name: "crab",
+		palette: { c: "#ff6b5e", k: "#26221d" },
 		map: [
-			"...ooooo.....",
-			"..ooooooo.o..",
-			".oooooooo.o..",
-			".koooooo.oo..",
-			"oooooooooo.o.",
-			".woooooo..oo.",
-			".wwoooo...o..",
-			"..wwoo.......",
-			"...oo........",
+			".cc......cc.",
+			".cc......cc.",
+			"..c......c..",
+			"..cccccccc..",
+			".cckcccckcc.",
+			".cccccccccc.",
+			"..cccccccc..",
+			".c.c....c.c.",
 		],
 	},
 	{
-		name: "starmie",
-		palette: { p: "#9d6ff0", r: "#ff5f5f" },
+		name: "whale",
+		palette: { b: "#5a8fd8", w: "#f8f4e3", k: "#26221d" },
 		map: [
-			"......p......",
-			".....ppp.....",
-			".....ppp.....",
-			"ppppppppppppp",
-			".ppppppppppp.",
-			"..ppprrrppp..",
-			"...pprrrpp...",
-			"...ppppppp...",
-			"..ppp...ppp..",
-			".pp.......pp.",
-			"pp.........pp",
-		],
-	},
-	{
-		name: "squirtle",
-		palette: { b: "#7fc4e8", s: "#b5713f", w: "#f8f4e3", k: "#26221d" },
-		map: [
-			"....bbbbbbbb....",
-			"..bbbbbbbbbbbb..",
-			".bbbbbbbbbbbbbb.",
-			".bbkkbbbbbbkkbb.",
-			".bbbbbbbbbbbbbb.",
-			"..bbbbbbbbbbbb..",
-			"...bbbbbbbbbb...",
-			"..bssssssssssb..",
-			".bbsswwwwwwssbb.",
-			".bbswwwwwwwwsbb.",
-			".bbswwwwwwwwsbb.",
-			"..bssssssssssb..",
-			".bbb........bbb.",
-			".bb..........bb.",
+			"..w.w.........",
+			"....bbbbbb..b.",
+			"..bbbbbbbb.bbb",
+			".bkbbbbbbbbbbb",
+			"bbbbbbbbbbbbbb",
+			".bbbbbbbbbbbb.",
+			"..wwwwwwwww...",
 		],
 	},
 ];
@@ -224,7 +185,7 @@ const PALS: Pal[] = [
 
 	:global(.pal svg) {
 		display: block;
-		width: clamp(48px, 6vw, 72px);
+		width: clamp(36px, 4.5vw, 56px);
 		height: auto;
 	}
 

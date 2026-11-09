@@ -41,9 +41,8 @@ src/
 │   ├── sections/        one .astro file per page section
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
-│   ├── Marquee.astro    skills ticker under the hero
 │   ├── Bubbles.astro    ambient pixel bubbles rising in the hero background
-│   ├── PixelPals.astro  Pokémon sprites popping up in the hero at random intervals
+│   ├── PixelPals.astro  small water animals floating up through the hero
 │   ├── PongGame.astro   playable pixel pong easter egg — unlocked by the Konami code
 │   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
@@ -57,7 +56,6 @@ src/
 │   ├── writeups.ts      writeup entries; reads writeups.generated.json if present
 │   ├── projects.ts      repo list; reads projects.generated.json if present
 │   ├── themes.ts        the six palettes + chrome colours for the theme picker
-│   ├── skills.ts        ticker entries
 │   └── *.generated.json committed snapshots written by scripts/fetch-data.mjs
 ├── layouts/Base.astro   <head>, meta, JSON-LD, inline theme-restore script
 ├── pages/index.astro    composes the sections in order
@@ -110,13 +108,13 @@ frosted card (`.hero-panel` in `Hero.astro`) — 90% `color-mix` of `--surface`
 plus `backdrop-filter: blur(8px)` — with the house hairline elevation. Any new
 hero decoration must keep that panel between it and the text.
 
-**Pixel pals** (`PixelPals.astro`): full-body Pokémon sprites (Psyduck,
-Pokéball, Mew, Magikarp, Starmie, Squirtle) render at build time into
+**Pixel pals** (`PixelPals.astro`): small water animals (fish, jellyfish,
+octopus, crab, whale) render at build time into
 `<template>` elements; the client script clones one every 9–18 s and CSS
 floats it UP through the hero like the bubbles — spawn below the bottom edge,
 slow linear rise plus an alternate-sway inner span, `animationend` frees it.
-Their identity colours are literal hex, NOT `--t-*` tokens — Psyduck stays
-yellow in every palette (the one sanctioned exception to the token rule).
+Their colours are literal hex, NOT `--t-*` tokens — the crab stays red in
+every palette (the one sanctioned exception to the token rule).
 Spawns pause off-screen, hidden tabs, reduced motion, and while pong is on.
 
 **The background pong** (`PongGame.astro`) is an easter egg, locked until the
