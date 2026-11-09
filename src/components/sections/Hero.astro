@@ -51,7 +51,7 @@ import PongGame from "../PongGame.astro";
 		</div>
 
 		<div class="hero-right reveal">
-			<div class="terminal card">
+			<div class="terminal">
 				<TerminalArt />
 			</div>
 			<p class="hero-quote">
@@ -80,6 +80,21 @@ import PongGame from "../PongGame.astro";
 		display: flex;
 		align-items: center;
 		gap: clamp(2rem, 5vw, 4rem);
+	}
+
+	/*
+		Frosted panels over the animation layer. The bubbles/pong canvas runs
+		behind the hero, so the two content columns get a translucent surface
+		(a near-opaque `color-mix`, so text stays readable even where
+		`backdrop-filter` is unsupported) with the house hairline elevation —
+		card language, but scoped to the text, not the whole section.
+	*/
+	.hero-left,
+	.hero-right {
+		background: color-mix(in srgb, var(--surface) 90%, transparent);
+		backdrop-filter: blur(8px);
+		box-shadow: var(--elevation);
+		padding: clamp(1.4rem, 3vw, 2.2rem);
 	}
 
 	.hero-left {
@@ -140,7 +155,12 @@ import PongGame from "../PongGame.astro";
 	}
 
 	.terminal {
-		padding: 1.25rem;
+		/*
+			No box of its own: the pixel SVG draws the terminal window — frame,
+			title bar, dots — so an outer card here would be a border around a
+			border. Only breathing room against the frosted panel.
+		*/
+		padding: 0.75rem 0.25rem 0.25rem;
 	}
 
 	.terminal :global(svg) {

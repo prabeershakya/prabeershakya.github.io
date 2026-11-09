@@ -80,7 +80,9 @@
 				// Bigger bubbles rise slower, like real ones.
 				vy: -(14 - d) - Math.random() * 4,
 				amp: 0.5 + Math.random() * 2.5,
-				freq: 0.4 + Math.random() * 0.8,
+				// Radians per SECOND: ~2–7 s per sway. Passing milliseconds here
+				// vibrated the field like a shaken soda — the bug this replaced.
+				freq: 1.2 + Math.random() * 1.6,
 				phase: Math.random() * Math.PI * 2,
 				brand: Math.random() < 0.2,
 			});
@@ -96,7 +98,7 @@
 
 		const target = () => Math.min(MAX_BUBBLES, Math.round((gw * gh) / 3000));
 
-		const step = (dt: number, now: number) => {
+		const step = (dt: number) => {
 			// Top up gradually, one at a time, so the field assembles calmly.
 			if (bubbles.length < target() && Math.random() < dt * 3) spawn();
 
@@ -117,14 +119,14 @@
 				pops[i]!.t += dt;
 				if (pops[i]!.t > 0.18) pops.splice(i, 1);
 			}
-			void now;
 		};
 
-		const render = (now: number) => {
+		/** `t` is seconds — the wobble frequency is radians per second. */
+		const render = (t: number) => {
 			ctx!.clearRect(0, 0, gw, gh);
 
 			for (const bubble of bubbles) {
-				const wobble = Math.sin(now * bubble.freq + bubble.phase) * bubble.amp;
+				const wobble = Math.sin(t * bubble.freq + bubble.phase) * bubble.amp;
 				const x = Math.round(bubble.x + wobble);
 				const y = Math.round(bubble.y);
 				ctx!.globalAlpha = bubble.brand ? 0.9 : 0.55;
@@ -169,8 +171,8 @@
 			const t = now / 1000;
 			const dt = Math.min(0.04, (now - last) / 1000);
 			last = now;
-			step(dt, t);
-			render(t * 1000);
+			step(dt);
+			render(t);
 			raf = requestAnimationFrame(loop);
 		};
 

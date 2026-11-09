@@ -101,6 +101,14 @@ when motion is reduced or JS is off.
 **The background bubbles** (`Bubbles.astro`) are the hero's default ambient
 layer: hollow pixel-circle bubbles (precomputed ring masks) rising with a sine
 wobble, popping into a sparkle at the surface. ~20% wear the brand colour.
+The wobble is `sin(t * freq)` with `t` in SECONDS — the one time milliseconds
+were passed here, the field vibrated at ~70 Hz like a shaken soda.
+
+**Hero readability over animation**: the hero's two content columns
+(`.hero-left`, `.hero-right`) sit on frosted panels — 90% `color-mix` of
+`--surface` plus `backdrop-filter: blur(8px)` — with the house hairline
+elevation. Any new hero decoration must keep those panels between it and the
+text.
 
 **The background pong** (`PongGame.astro`) is an easter egg, locked until the
 Konami code (↑↑↓↓←→←→ B A) sets `data-pong="on"` on `<html>` — then it plays
