@@ -2,6 +2,7 @@
 import { repos, reposSource } from "../../data/projects";
 import { profile } from "../../data/profile";
 import PixelArt from "../PixelArt.astro";
+import Icon from "../Icon.astro";
 
 const PROFILE = profile.github;
 
@@ -72,7 +73,7 @@ const SHIELD = [
 
 		<p class="work-foot reveal">
 			<a class="btn" href={PROFILE} target="_blank" rel="noopener">
-				more on github ↗
+				<Icon name="github" size={15} /> more on github
 			</a>
 		</p>
 	</div>

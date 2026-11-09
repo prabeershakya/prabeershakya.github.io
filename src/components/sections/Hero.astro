@@ -5,6 +5,7 @@ import MarkDraw from "../MarkDraw.astro";
 import Bubbles from "../Bubbles.astro";
 import PongGame from "../PongGame.astro";
 import PixelBits from "../PixelBits.astro";
+import Icon from "../Icon.astro";
 ---
 
 <section id="top" class="hero">
@@ -42,10 +43,10 @@ import PixelBits from "../PixelBits.astro";
 
 				<div class="hero-cta reveal">
 					<a class="btn btn-accent" href="#projects">
-						view work
+						<Icon name="arrow-right" size={15} /> view work
 					</a>
 					<a class="btn" href={profile.linkedin} target="_blank" rel="noopener">
-						linkedin ↗
+						<Icon name="linkedin" size={15} /> linkedin
 					</a>
 				</div>
 			</div>

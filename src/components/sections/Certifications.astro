@@ -4,6 +4,8 @@
 	verification link to publish, so that entry is listed without one rather
 	than linking to a course page that would not actually verify it.
 */
+import Icon from "../Icon.astro";
+
 const certs = [
 	{
 		name: "APIsec Certified Practitioner",
@@ -28,6 +30,9 @@ const certs = [
 		<div class="section-head reveal">
 			<p class="sec-label">04 — certifications</p>
 			<h2 class="section-title">
+				<span class="title-icon">
+					<Icon name="award" size={22} />
+				</span>
 				CERTIFIED <span class="hl">&</span> CREDENTIALED
 			</h2>
 			<p class="section-copy mono">
@@ -43,7 +48,9 @@ const certs = [
 							<span class="cert-name">{cert.name}</span>
 							<span class="cert-status mono">{cert.status}</span>
 						</span>
-						<span class="cert-cta mono">verify →</span>
+						<span class="cert-cta mono">
+							<Icon name="external" size={13} /> verify
+						</span>
 					</a>
 				) : (
 					<div class="cert card">
@@ -106,6 +113,9 @@ const certs = [
 
 	.cert-cta {
 		flex: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
 		font-size: 0.75rem;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;

@@ -102,7 +102,7 @@ for (let y = 0; y < ROWS; y++) {
 	frameCells.push({ x: 0, y, fill: "var(--border-strong)" });
 	frameCells.push({ x: COLS - 1, y, fill: "var(--border-strong)" });
 }
-/** Title bar between the rules: three window dots, then the running title. */
+/** Title bar between the rules: three window dots. */
 const DOTS: [number, string][] = [
 	[3, "#ff6b6b"],
 	[5, "#ffd93d"],
@@ -114,8 +114,6 @@ for (let x = 1; x < COLS - 1; x++) {
 for (const [x, fill] of DOTS) {
 	frameCells.push({ x, y: 1, fill });
 }
-// Title sits in the bar, outside .screen — the script never clears it.
-frameCells.push(...textCells(TITLE, 11, 1, "var(--text-secondary)"));
 
 /** One line of text as cells, at a given top row. */
 function textCells(text: string, col: number, row: number, fill: string): Cell[] {

@@ -52,6 +52,9 @@ const TROPHY = [
 		<div class="section-head reveal">
 			<p class="sec-label">03 — achievements</p>
 			<h2 class="section-title">
+				<span class="title-icon">
+					<Icon name="flag" size={22} />
+				</span>
 				SHIP IT, <span class="hl">THEN SHOW IT</span>
 			</h2>
 		</div>
@@ -470,5 +473,11 @@ const TROPHY = [
 		.tm-grid {
 			grid-template-columns: 1fr;
 		}
+	}
+	.title-icon {
+		display: inline-flex;
+		vertical-align: middle;
+		margin-right: 0.35rem;
+		color: var(--brand);
 	}
 </style>

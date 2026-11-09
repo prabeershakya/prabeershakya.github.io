@@ -421,6 +421,14 @@ h4 {
 	font-size: clamp(1.7rem, 3.6vw, 2.6rem);
 }
 
+/* Small leading icon inside a section title. */
+.title-icon {
+	display: inline-flex;
+	vertical-align: middle;
+	margin-right: 0.35rem;
+	color: var(--brand);
+}
+
 /* ------------------------------ scroll reveal ----------------------------- */
 
 /*

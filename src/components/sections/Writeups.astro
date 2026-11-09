@@ -1,5 +1,6 @@
 ---
 import { writeups, writeupSource, type Severity } from "../../data/writeups";
+import Icon from "../Icon.astro";
 
 /** How many writeups to show. Six tiles read well without crowding. */
 const CAP = 6;
@@ -27,6 +28,9 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 		<div class="section-head reveal">
 			<p class="sec-label">05 — writeups</p>
 			<h2 class="section-title">
+				<span class="title-icon">
+					<Icon name="file-text" size={22} />
+				</span>
 				THINGS I <span class="hl">BROKE</span>, WRITTEN UP
 			</h2>
 			<div class="chip-row">
@@ -50,7 +54,9 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 				{writeups.slice(0, CAP).map((w) => (
 					<article class="wu card" data-hoverable style={`--sev:${SEVERITY_COLOR[w.severity]}`}>
 						<span class="wu-head">
-							<span class="wu-source mono">{w.source}</span>
+							<span class="wu-source mono">
+								<Icon name="file-text" size={12} /> {w.source}
+							</span>
 							<span class="wu-date mono">{w.date}</span>
 						</span>
 						<span class="wu-title">{w.title}</span>
@@ -119,6 +125,9 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 	}
 
 	.wu-source {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
 		font-size: 0.68rem;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
