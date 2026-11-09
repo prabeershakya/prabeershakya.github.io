@@ -1,0 +1,490 @@
+---
+import { themes, isThemeId } from "../data/themes";
+
+const links = [
+	{ href: "#about", label: "About" },
+	{ href: "#projects", label: "Work" },
+	{ href: "#achievements", label: "Achievements" },
+	{ href: "#certifications", label: "Certs" },
+	{ href: "#writeups", label: "Writeups" },
+	{ href: "#contact", label: "Contact" },
+];
+---
+
+<header class="bar" id="site-nav">
+	<div class="container bar-inner">
+		<a href="#top" class="logo">
+			<span class="logo-mark" aria-hidden="true">
+				<!-- Pixel "P", four cells wide. Filled cells only; the grid is
+				     implied by the viewBox math (5x5 cells of 4 units). -->
+				<svg
+					viewBox="0 0 20 20"
+					width="20"
+					height="20"
+					shape-rendering="crispEdges"
+					aria-hidden="true"
+				>
+					<rect x="0" y="0" width="12" height="4" fill="var(--brand)" />
+					<rect x="0" y="4" width="4" height="16" fill="var(--brand)" />
+					<rect x="8" y="4" width="4" height="8" fill="var(--brand)" />
+					<rect x="4" y="8" width="4" height="4" fill="var(--brand)" />
+					<rect x="8" y="16" width="4" height="4" fill="var(--brand)" />
+				</svg>
+			</span>
+			<span class="logo-text">
+				SHAKYA
+				<span class="logo-dot" aria-hidden="true">
+					_
+				</span>
+			</span>
+		</a>
+
+		<nav class="bar-links" aria-label="Primary">
+			<ul>
+				{links.map((l) => (
+					<li>
+						<a href={l.href}>{l.label}</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<div class="bar-actions">
+			<details class="picker" data-theme-picker>
+				<summary class="picker-btn" title="Change the theme">
+					<svg
+						viewBox="0 0 20 20"
+						width="16"
+						height="16"
+						shape-rendering="crispEdges"
+						aria-hidden="true"
+					>
+						<rect x="0" y="0" width="20" height="12" fill="var(--brand)" />
+						<rect x="0" y="12" width="4" height="8" fill="var(--brand)" />
+						<rect x="4" y="14" width="4" height="6" fill="var(--brand)" />
+						<rect x="8" y="12" width="4" height="8" fill="var(--brand)" />
+						<rect x="12" y="14" width="4" height="4" fill="var(--brand)" />
+						<rect x="16" y="12" width="4" height="4" fill="var(--text-muted)" />
+						<rect x="3" y="3" width="4" height="4" fill="var(--brand-ink)" />
+						<rect x="12" y="3" width="4" height="4" fill="var(--brand-ink)" />
+					</svg>
+					<span class="picker-label" data-theme-label>
+						theme
+					</span>
+					<kbd class="picker-kbd" aria-hidden="true">
+						T
+					</kbd>
+				</summary>
+				<ul class="picker-menu" role="listbox" aria-label="Theme">
+					{themes.map((t) => (
+						<li>
+							<button
+								type="button"
+								class="picker-item"
+								role="option"
+								data-theme-option={t.id}
+								aria-selected={t.id === "tokyo-night" ? "true" : "false"}
+							>
+								<span class="swatch" style={`background:${t.chrome}`} aria-hidden="true" />
+								{t.label}
+							</button>
+						</li>
+					))}
+				</ul>
+			</details>
+
+			<button
+				class="menu-toggle"
+				type="button"
+				aria-expanded="false"
+				aria-controls="bar-links-mobile"
+			>
+				<span class="menu-toggle-label">Menu</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="bar-mobile" id="bar-links-mobile" hidden>
+		<ul>
+			{links.map((l) => (
+				<li>
+					<a href={l.href}>{l.label}</a>
+				</li>
+			))}
+		</ul>
+	</div>
+</header>
+
+<script>
+	import { themes, isThemeId, DEFAULT_THEME } from "../data/themes";
+
+	const header = document.getElementById("site-nav");
+
+	/* --------------------------- theme switcher --------------------------- */
+
+	const STORE_KEY = "pixel-theme";
+	const root = document.documentElement;
+	const picker = header?.querySelector<HTMLDetailsElement>("[data-theme-picker]");
+	const label = header?.querySelector<HTMLElement>("[data-theme-label]");
+	const options = [...(header?.querySelectorAll<HTMLButtonElement>("[data-theme-option]") ?? [])];
+
+	const readStored = (): string | null => {
+		try {
+			return localStorage.getItem(STORE_KEY);
+		} catch {
+			return null;
+		}
+	};
+
+	const writeStored = (value: string) => {
+		try {
+			localStorage.setItem(STORE_KEY, value);
+		} catch {
+			/* Storage unavailable; the choice just will not persist. */
+		}
+	};
+
+	const syncPicker = () => {
+		const current = root.dataset.theme ?? DEFAULT_THEME;
+		if (label) label.textContent = themes.find((t) => t.id === current)?.label ?? "theme";
+		options.forEach((option) => {
+			option.setAttribute("aria-selected", String(option.dataset.themeOption === current));
+		});
+	};
+
+	const setTheme = (id: string) => {
+		if (!isThemeId(id)) return;
+		root.dataset.theme = id;
+		writeStored(id);
+		syncPicker();
+		(window as Window & { __syncThemeMeta?: () => void }).__syncThemeMeta?.();
+	};
+
+	// The inline script in Base.astro already restored the stored choice before
+	// first paint; this only aligns the picker's visible state with it.
+	syncPicker();
+
+	options.forEach((option) => {
+		option.addEventListener("click", () => {
+			setTheme(option.dataset.themeOption ?? DEFAULT_THEME);
+			if (picker) picker.open = false;
+		});
+	});
+
+	// `T` cycles through the palettes, omarchy-style. Ignored while typing —
+	// the key must never hijack a text field or the picker's own focus nav.
+	document.addEventListener("keydown", (event) => {
+		if (event.key.toLowerCase() !== "t") return;
+		const target = event.target as HTMLElement | null;
+		if (
+			target &&
+			(target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
+		)
+			return;
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+		const current = root.dataset.theme ?? DEFAULT_THEME;
+		const index = themes.findIndex((t) => t.id === current);
+		const next = themes[(index + 1) % themes.length].id;
+		setTheme(next);
+		if (picker) picker.open = false;
+	});
+
+	// Click-away close. `details` has no native outside-click behaviour.
+	document.addEventListener("click", (event) => {
+		if (picker?.open && !picker.contains(event.target as Node)) picker.open = false;
+	});
+
+	/* ---------------------------- mobile menu ----------------------------- */
+
+	const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
+	const mobile = document.getElementById("bar-links-mobile");
+
+	const setOpen = (open: boolean) => {
+		if (!toggle || !mobile || !header) return;
+		header.dataset.open = String(open);
+		toggle.setAttribute("aria-expanded", String(open));
+		mobile.hidden = !open;
+	};
+
+	toggle?.addEventListener("click", () => {
+		setOpen(header?.dataset.open !== "true");
+	});
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key !== "Escape" || header?.dataset.open !== "true") return;
+		setOpen(false);
+		toggle?.focus();
+	});
+
+	document.addEventListener("click", (event) => {
+		if (header?.dataset.open !== "true" || !header) return;
+		if (!header.contains(event.target as Node)) setOpen(false);
+	});
+
+	// Collapse automatically once the inline row is back.
+	window.matchMedia("(min-width: 861px)").addEventListener("change", (mq) => {
+		if (mq.matches) setOpen(false);
+	});
+
+	/* -------------------------- active section ---------------------------- */
+
+	const sectionLinks = [...(header?.querySelectorAll<HTMLAnchorElement>(".bar-links a") ?? [])];
+	const sections = document.querySelectorAll<HTMLElement>("section[id]");
+	if (sections.length && sectionLinks.length) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries.find((e) => e.isIntersecting);
+				if (!visible) return;
+				sectionLinks.forEach((a) => {
+					const active = a.getAttribute("href") === `#${visible.target.id}`;
+					if (active) a.setAttribute("aria-current", "true");
+					else a.removeAttribute("aria-current");
+				});
+			},
+			{ rootMargin: "-70px 0px -60% 0px" },
+		);
+		sections.forEach((s) => observer.observe(s));
+	}
+</script>
+
+<style>
+	.bar {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		height: var(--nav-h);
+		background: var(--surface);
+		border-bottom: 1px solid var(--border-subtle);
+	}
+
+	.bar-inner {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		height: var(--nav-h);
+	}
+
+	.logo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		text-decoration: none;
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: 0.9rem;
+		letter-spacing: 0.1em;
+		flex: none;
+	}
+
+	.logo-dot {
+		color: var(--brand);
+		animation: blink 1.3s step-end infinite;
+	}
+
+	@keyframes blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.bar-links ul {
+		display: flex;
+		gap: 1.3rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.bar-links a {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--text-secondary);
+		text-decoration: none;
+		padding: 0.3rem 0;
+		transition: color var(--ease);
+		white-space: nowrap;
+	}
+
+	.bar-links a[aria-current] {
+		color: var(--brand);
+	}
+
+	@media (hover: hover) {
+		.bar-links a:hover {
+			color: var(--text);
+		}
+	}
+
+	.bar-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-left: auto;
+		flex: none;
+	}
+
+	/* --------------------------- theme picker ----------------------------- */
+
+	.picker {
+		position: relative;
+	}
+
+	.picker-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-secondary);
+		background: var(--surface);
+		box-shadow: var(--elevation);
+		padding: 0.42rem 0.6rem;
+		cursor: pointer;
+		list-style: none;
+		transition:
+			box-shadow var(--ease),
+			color var(--ease);
+	}
+
+	.picker-btn::-webkit-details-marker {
+		display: none;
+	}
+
+	@media (hover: hover) {
+		.picker-btn:hover {
+			color: var(--text);
+			box-shadow: var(--elevation-hover);
+		}
+	}
+
+	.picker-kbd {
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		color: var(--text-muted);
+		border: 1px solid var(--border-subtle);
+		padding: 0 0.28rem;
+	}
+
+	.picker-menu {
+		position: absolute;
+		right: 0;
+		top: calc(100% + 6px);
+		z-index: 60;
+		min-width: 12rem;
+		margin: 0;
+		padding: 0.3rem;
+		list-style: none;
+		background: var(--surface);
+		box-shadow:
+			var(--elevation-hover),
+			0 12px 32px #00000059;
+	}
+
+	.picker-item {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		width: 100%;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--text-secondary);
+		background: none;
+		border: 0;
+		padding: 0.45rem 0.55rem;
+		cursor: pointer;
+		text-align: left;
+		transition:
+			background var(--ease),
+			color var(--ease);
+	}
+
+	.picker-item[aria-selected="true"] {
+		color: var(--brand);
+		background: var(--brand-soft);
+	}
+
+	@media (hover: hover) {
+		.picker-item:hover {
+			background: var(--surface-2);
+			color: var(--text);
+		}
+	}
+
+	.swatch {
+		width: 12px;
+		height: 12px;
+		flex: none;
+		box-shadow: 0 0 0 1px var(--border-strong);
+	}
+
+	/* ---------------------------- mobile menu ----------------------------- */
+
+	.menu-toggle {
+		display: none;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text);
+		background: var(--surface);
+		box-shadow: var(--elevation);
+		border: 0;
+		padding: 0.45rem 0.7rem;
+		cursor: pointer;
+	}
+
+	.bar-mobile {
+		background: var(--surface);
+		border-bottom: 1px solid var(--border-subtle);
+		padding: 0.6rem var(--gutter) 1rem;
+	}
+
+	.bar-mobile ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.bar-mobile a {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		text-decoration: none;
+		padding: 0.55rem 0;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+
+	.bar-mobile li:last-child a {
+		border-bottom: 0;
+	}
+
+	@media (max-width: 860px) {
+		.bar-links {
+			display: none;
+		}
+
+		.menu-toggle {
+			display: inline-flex;
+		}
+	}
+
+	/* No-JS fallback: lay the links inline under the bar. */
+	.no-js .bar-links {
+		display: block;
+	}
+
+	.no-js .menu-toggle {
+		display: none;
+	}
+
+	.no-js .bar-mobile {
+		display: none;
+	}
+</style>

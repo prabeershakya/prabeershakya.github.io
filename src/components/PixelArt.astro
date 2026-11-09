@@ -1,0 +1,80 @@
+---
+/**
+ * Pixel-art renderer: draws a string map as a crisp SVG.
+ *
+ * Each character is one "cell"; `.` (and any char missing from the palette)
+ * is transparent. Colours may be CSS values including `var(--…)` tokens, so
+ * the art re-tints itself when the theme switches — the same trick omarchy's
+ * pixel scenes use.
+ *
+ * Rows are padded to the longest row, so hand-drawn maps never have to be
+ * counted precisely. One `<rect>` per filled cell keeps the component dumb;
+ * scenes are small enough that this costs nothing.
+ */
+interface Props {
+	/** Rows of single-character cells. */
+	map: string[];
+	/** Character -> fill colour. */
+	palette: Record<string, string>;
+	/** Cells holding these characters pulse on a 1.2s step cycle (cursors). */
+	blink?: string;
+	/** Rendered width/height, for layout. The SVG itself scales. */
+	class?: string;
+}
+
+const { map, palette, blink = "", class: className } = Astro.props;
+
+const width = Math.max(...map.map((row) => row.length));
+const height = map.length;
+
+const cells: { x: number; y: number; fill: string; blink: boolean }[] = [];
+for (const [y, row] of map.entries()) {
+	for (let x = 0; x < row.length; x++) {
+		const char = row[x];
+		const fill = palette[char];
+		if (!fill) continue;
+		cells.push({ x, y, fill, blink: blink.includes(char) });
+	}
+}
+---
+
+<svg
+	class={className}
+	viewBox={`0 0 ${width} ${height}`}
+	shape-rendering="crispEdges"
+	role="img"
+	aria-hidden="true"
+>
+	{cells.map((cell) => (
+		<rect
+			x={cell.x}
+			y={cell.y}
+			width={1.02}
+			height={1.02}
+			fill={cell.fill}
+			class={cell.blink ? "px-blink" : undefined}
+		/>
+	))}
+</svg>
+
+<style>
+	.px-blink {
+		animation: px-blink 1.2s step-end infinite;
+	}
+
+	@keyframes px-blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.px-blink {
+			animation: none;
+		}
+	}
+</style>

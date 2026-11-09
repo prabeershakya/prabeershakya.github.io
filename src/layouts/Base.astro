@@ -1,0 +1,201 @@
+---
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_URL } from "../../astro.config.mjs";
+import { profile } from "../data/profile";
+import "@fontsource-variable/geist";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const {
+	title,
+	description = "Portfolio of Prabeer Man Shakya, cyber security learner and CTF competitor.",
+} = Astro.props;
+
+const { name: NAME } = profile;
+const fullTitle = title.includes("—") ? title : `${title} — ${NAME}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE_URL).href;
+const ogImage = new URL("/og.png", Astro.site ?? SITE_URL).href;
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "Person",
+	name: NAME,
+	url: canonical,
+	jobTitle: "Cyber Security Learner",
+	description,
+	sameAs: [
+		profile.github,
+		profile.linkedin,
+		profile.tryhackme,
+		profile.hackthebox,
+		profile.visored,
+	],
+	knowsAbout: [
+		"Web Application Pentesting",
+		"OWASP Top 10",
+		"Network Reconnaissance",
+		"Python",
+		"C",
+	],
+};
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="color-scheme" content="dark light" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta name="theme-color" content="#1a1b26" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={NAME} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={`${NAME} — cyber security portfolio`} />
+		<meta property="og:locale" content="en_US" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={fullTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+		<script is:inline>
+			document.documentElement.classList.remove("no-js");
+
+			/*
+				Theme: restore the reader's saved palette before first paint.
+
+				This has to be inline and blocking, here in <head>. A module script
+				would be deferred and run after the body has painted, which is
+				exactly the wrong-palette flash this exists to prevent.
+
+				The id list is duplicated from src/data/themes.ts on purpose: this
+				script must stay dependency-free, and importing a module into an
+				inline blocking script is not possible. Keep the two in sync.
+
+				`localStorage` is guarded — Safari private mode and storage-
+				partitioned iframes throw. Failing to read is not fatal: the page
+				simply wears the default (Tokyo Night).
+			*/
+			var THEMES = {
+				"tokyo-night": "#1a1b26",
+				gruvbox: "#282828",
+				"catppuccin-mocha": "#1e1e2e",
+				nord: "#2e3440",
+				hackerman: "#0a0f0a",
+				"catppuccin-latte": "#eff1f5",
+			};
+			var root = document.documentElement;
+			var saved = null;
+			try {
+				saved = localStorage.getItem("pixel-theme");
+			} catch (e) {}
+			if (saved && Object.prototype.hasOwnProperty.call(THEMES, saved)) {
+				root.dataset.theme = saved;
+			}
+			if (!root.dataset.theme) root.dataset.theme = "tokyo-night";
+
+			/*
+				Keep `theme-color` in step with the active palette, so the browser
+				chrome matches the page. Nav's switcher calls this after each change.
+			*/
+			window.__syncThemeMeta = function () {
+				var meta = document.querySelector('meta[name="theme-color"]');
+				var color = THEMES[root.dataset.theme] || "#1a1b26";
+				if (meta) meta.setAttribute("content", color);
+			};
+			window.__syncThemeMeta();
+		</script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">
+			Skip to content
+		</a>
+		<Nav />
+		<main id="main">
+			<slot />
+		</main>
+		<Footer />
+
+		<script>
+			/*
+				Scroll reveal. `.reveal` elements fade up once, when they first
+				cross into view. Unobserved if the API is missing — the elements
+				then simply stay visible from the start, because `.reveal` without
+				`.is-visible` is only hidden inside a `prefers-reduced-motion:
+				no-preference` block AND with JS running… no: it is hidden by CSS
+				regardless. So this observer must run for anything to appear; it
+				is guarded everywhere it can fail, and the `.no-js` path keeps
+				everything visible without JS at all.
+			*/
+			const els = document.querySelectorAll<HTMLElement>(".reveal");
+			if (els.length && "IntersectionObserver" in window) {
+				const io = new IntersectionObserver(
+					(entries) => {
+						for (const entry of entries) {
+							if (entry.isIntersecting) {
+								entry.target.classList.add("is-visible");
+								io.unobserve(entry.target);
+							}
+						}
+					},
+					{ rootMargin: "0px 0px -10% 0px" },
+				);
+				els.forEach((el) => io.observe(el));
+			} else {
+				els.forEach((el) => el.classList.add("is-visible"));
+			}
+		</script>
+
+		<style>
+			.skip-link {
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 100;
+				transform: translateY(-120%);
+				background: var(--brand);
+				color: var(--brand-ink);
+				font-family: var(--font-mono);
+				font-size: 0.8rem;
+				letter-spacing: 0.08em;
+				padding: 0.7rem 1rem;
+				text-decoration: none;
+				transition: transform 120ms ease;
+			}
+
+			.skip-link:focus-visible {
+				transform: translateY(0);
+			}
+
+			/*
+				Without JS the reveal observer never runs, so nothing marked
+				`.reveal` would ever fade in. The class is stripped from <html>
+				before first paint in that case, and this rule short-circuits the
+				hidden state for every element inside it.
+			*/
+			:global(.no-js .reveal) {
+				opacity: 1;
+				transform: none;
+			}
+		</style>
+	</body>
+</html>

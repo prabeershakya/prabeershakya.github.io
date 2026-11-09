@@ -1,0 +1,99 @@
+---
+import { profile } from "../data/profile";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+	<div class="container foot-inner">
+		<p class="foot-brand mono">
+			<span class="foot-dot" aria-hidden="true"></span>
+			SHAKYA
+			<span class="foot-cursor" aria-hidden="true">
+				_
+			</span>
+		</p>
+		<p class="foot-mono mono">© {year} PRABEER MAN SHAKYA</p>
+		<p class="foot-links mono">
+			<a href={profile.github} target="_blank" rel="noopener">
+				github
+			</a>
+			<span aria-hidden="true">·</span>
+			<a href={profile.linkedin} target="_blank" rel="noopener">
+				linkedin
+			</a>
+		</p>
+	</div>
+</footer>
+
+<style>
+	.foot {
+		border-top: 1px solid var(--border-subtle);
+		background: var(--bg-deep);
+	}
+
+	.foot-inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding-block: 1.6rem;
+	}
+
+	.foot-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-weight: 700;
+		font-size: 0.85rem;
+		letter-spacing: 0.1em;
+		color: var(--text);
+	}
+
+	.foot-dot {
+		width: 8px;
+		height: 8px;
+		background: var(--brand);
+	}
+
+	.foot-cursor {
+		color: var(--brand);
+		animation: foot-blink 1.3s step-end infinite;
+	}
+
+	@keyframes foot-blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.foot-mono,
+	.foot-links {
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+
+	.foot-links {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+
+	.foot-links a {
+		color: var(--text-secondary);
+		text-decoration: none;
+		padding-block: 0.24rem;
+		transition: color var(--ease);
+	}
+
+	.foot-links a:hover {
+		color: var(--brand);
+	}
+</style>
