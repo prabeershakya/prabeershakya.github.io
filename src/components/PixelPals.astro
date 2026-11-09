@@ -156,16 +156,20 @@ const PALS: Pal[] = [
 		overflow: hidden;
 	}
 
-	.pal {
+	/*
+		.pal spans are created by the script at runtime, so they never receive
+		Astro's scoping attribute — these rules must stay :global.
+	*/
+	:global(.pal) {
 		position: absolute;
 		animation: pal-pop 260ms steps(2, end) both;
 	}
 
-	.pal.bye {
+	:global(.pal.bye) {
 		animation: pal-drop 220ms steps(2, end) both;
 	}
 
-	.pal :global(svg) {
+	:global(.pal svg) {
 		width: clamp(48px, 6vw, 72px);
 		height: auto;
 	}
