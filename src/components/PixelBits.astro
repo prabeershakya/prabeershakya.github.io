@@ -1,8 +1,8 @@
 ---
 /**
- * Pixel bits: random binary strings that float UP through the hero, mixed in
- * with the bubbles — they surface below the bottom edge, rise slowly with a
- * gentle sway, exit at the top, and free themselves. One surfaces every 9–18 s,
+ * Pixel bits: single 1s and 0s that float UP through the hero, mixed in with
+ * the bubbles — they surface below the bottom edge, rise slowly with a
+ * gentle sway, exit at the top, and free themselves. One surfaces every 5–11 s,
  * so a few are usually drifting at once.
  *
  * The digits are drawn with the shared 3x5 pixel font (`src/lib/pixel-font.ts`)
@@ -19,7 +19,7 @@
 <div class="bits" aria-hidden="true"></div>
 
 <script>
-	import { GLYPHS, CHAR_W, CHAR_H, ADVANCE, textWidth } from "../lib/pixel-font";
+	import { GLYPHS, CHAR_W, CHAR_H } from "../lib/pixel-font";
 
 	const host = document.getElementById("top");
 	const layer = document.querySelector<HTMLElement>(".bits");
@@ -32,39 +32,34 @@
 			threshold: 0.05,
 		}).observe(host);
 
-		const randomBits = (len: number): string =>
-			Array.from({ length: len }, () => (Math.random() < 0.5 ? "0" : "1")).join("");
-
-		/** Draw a string as crisp SVG rects using the shared pixel font. */
-		const buildSvg = (text: string): string => {
+		/** Draw one glyph as crisp SVG rects using the shared pixel font. */
+		const buildSvg = (char: string): string => {
 			let rects = "";
-			for (const [i, char] of [...text].entries()) {
-				const rows = GLYPHS[char.toUpperCase()]!;
-				for (let y = 0; y < CHAR_H; y++) {
-					const row = rows[y]!;
-					for (let x = 0; x < CHAR_W; x++) {
-						if (row & (1 << (CHAR_W - 1 - x))) {
-							rects += `<rect x="${i * ADVANCE + x}" y="${y}" width="1.02" height="1.02"/>`;
-						}
+			const rows = GLYPHS[char]!;
+			for (let y = 0; y < CHAR_H; y++) {
+				const row = rows[y]!;
+				for (let x = 0; x < CHAR_W; x++) {
+					if (row & (1 << (CHAR_W - 1 - x))) {
+						rects += `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`;
 					}
 				}
 			}
 			return (
-				`<svg viewBox="0 0 ${textWidth(text)} ${CHAR_H}" fill="currentColor"` +
+				`<svg viewBox="0 0 ${CHAR_W} ${CHAR_H}" fill="currentColor"` +
 				` shape-rendering="crispEdges">${rects}</svg>`
 			);
 		};
 
 		/**
-		 * Launch one string from below the bottom edge. CSS carries it up through
+		 * Launch one glyph from below the bottom edge. CSS carries it up through
 		 * the hero at bubble speed; `animationend` frees it at the top.
 		 */
 		const spawn = () => {
 			const sway = document.createElement("span");
 			sway.className = "bit-sway";
-			// Each string sways on its own rhythm, like the bubbles' wobble.
+			// Each glyph sways on its own rhythm, like the bubbles' wobble.
 			sway.style.animationDuration = `${2.4 + Math.random() * 2}s`;
-			sway.innerHTML = buildSvg(randomBits(3 + Math.floor(Math.random() * 4)));
+			sway.innerHTML = buildSvg(Math.random() < 0.5 ? "0" : "1");
 
 			const bit = document.createElement("span");
 			bit.className = Math.random() < 0.25 ? "bit brand" : "bit";
@@ -84,7 +79,8 @@
 						spawn();
 					schedule();
 				},
-				9000 + Math.random() * 9000,
+				// Single glyphs are lighter than strings were — drift a little more often.
+				5000 + Math.random() * 6000,
 			);
 		};
 
