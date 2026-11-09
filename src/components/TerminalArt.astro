@@ -259,6 +259,12 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 		};
 
 		const run = async () => {
+			// The static SSR frame shows the full dashboard for no-JS/reduced-motion.
+			// Clear it before booting so the animated takeover starts from a blank slate.
+			while (screen?.firstChild) screen.firstChild.remove();
+			groups.length = 0;
+			parkCursor(PAD, TEXT_TOP);
+
 			// Boot: reveal the dashboard row by row.
 			for (const [i, [label, value]] of dashboard.rows.entries()) {
 				await typeRow(i, label, value);
