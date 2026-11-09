@@ -4,6 +4,7 @@ import { teams, placeLabel, ctftimeFetched } from "../../data/teams";
 import { repos } from "../../data/projects";
 import { writeups } from "../../data/writeups";
 import PixelArt from "../PixelArt.astro";
+import Icon from "../Icon.astro";
 
 /** How many results a team shows. Six tiles fill the grid without crowding. */
 const ENTRY_CAP = 6;
@@ -75,6 +76,9 @@ const TROPHY = [
 				target="_blank"
 				rel="noopener"
 			>
+				<span class="plat-icon" aria-hidden="true">
+					<Icon name="tryhackme" size={15} />
+				</span>
 				<span class="plat-rank">Top 1%</span>
 				<span class="plat-name mono">tryhackme</span>
 			</a>
@@ -85,6 +89,9 @@ const TROPHY = [
 				target="_blank"
 				rel="noopener"
 			>
+				<span class="plat-icon" aria-hidden="true">
+					<Icon name="hackthebox" size={15} />
+				</span>
 				<span class="plat-rank">Hacker</span>
 				<span class="plat-name mono">hackthebox</span>
 			</a>
@@ -259,6 +266,20 @@ const TROPHY = [
 		gap: 0.6rem;
 		padding: 0.6rem 0.9rem;
 		text-decoration: none;
+	}
+
+	.plat-icon {
+		flex: none;
+		display: inline-flex;
+		color: var(--text-muted);
+		align-self: center;
+		transition: color var(--ease);
+	}
+
+	@media (hover: hover) {
+		.plat-item:hover .plat-icon {
+			color: var(--brand);
+		}
 	}
 
 	.plat-rank {

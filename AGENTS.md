@@ -42,7 +42,12 @@ src/
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
 │   ├── Marquee.astro    skills ticker under the hero
+│   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
+│   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
+│   ├── Icon.astro       inline brand icons (mail, github, linkedin, htb, thm)
 │   └── PixelArt.astro   pixel-art renderer: string map + palette → crisp SVG
+├── lib/
+│   └── pixel-font.ts    3x5 pixel font shared by SSR frames and client scripts
 ├── data/
 │   ├── profile.ts       every profile/social link, single source of truth
 │   ├── teams.ts         CTF results; merges CURATED with ctftime.generated.json
@@ -74,6 +79,22 @@ bundled script.
 values may be `var(--…)` tokens so the art re-tints with the theme. `c` cells
 blink. User-supplied PNGs can replace scenes later — keep scenes in their own
 constants so the swap is one component.
+
+**The animated terminal** (`TerminalArt.astro`) draws text with the shared
+3x5 font in `src/lib/pixel-font.ts`. The frontmatter renders the static first
+frame (so no-JS and reduced-motion users see full art); the bundled script
+only takes over the typing cycle when motion is allowed. The sequence is
+declared in BOTH the frontmatter and the script — the frontmatter throws the
+build if a glyph is missing, so a bad character fails loudly, but keep the two
+`SEQUENCE` arrays identical. `COLS`/`ROWS`/`PAD` are duplicated the same way.
+
+**Icons** render in `currentColor` via `Icon.astro` (`mail`, `github`,
+`linkedin`, `hackthebox`, `tryhackme`); hover colour comes from the parent
+link, never set on the icon.
+
+**Motion**: every animation gates on `prefers-reduced-motion` — typing, the
+mark-draw stroke, the ticker, reveal. Nothing may park content at opacity 0
+when motion is reduced or JS is off.
 
 **Hairlines, not shadows.** Depth is `var(--elevation)` (a 1px outline); hover
 steps to `--elevation-hover` plus a 2px lift. No offset shadows, no blur

@@ -1,0 +1,255 @@
+---
+/**
+ * The omarchy-style living hero scene: a pixel terminal that types commands,
+ * prints output, and loops.
+ *
+ * SSR renders one complete static frame (first command + output + cursor), so
+ * the art is fully present without JavaScript and under reduced motion — the
+ * script only takes over the cycle when it can run. Text is drawn with the
+ * shared 3x5 pixel font (`src/lib/pixel-font.ts`); frame and title bar are
+ * plain rects. All colours are theme tokens, so the scene re-tints with the
+ * palette switcher.
+ *
+ * The sequence lives in the script AND the frontmatter (frontmatter renders
+ * the static first frame). Keep the first entry of `SEQUENCE` and `FIRST_FRAME`
+ * the same pair, or first paint will not match the first loop step.
+ */
+import { GLYPHS, ADVANCE, CHAR_W, CHAR_H, textWidth } from "../lib/pixel-font";
+
+/* ------------------------------ geometry ---------------------------------- */
+
+const COLS = 64;
+const ROWS = 20;
+/** Text window: inside the 1-cell frame, under the 2-row title bar. */
+const PAD = 2;
+const TEXT_TOP = 4;
+/** Two lines visible: command + output. */
+const LINE_ROWS: [number, number] = [TEXT_TOP, TEXT_TOP + CHAR_H + 1];
+const PROMPT = "> ";
+
+/* ----------------------------- the sequence -------------------------------- */
+
+type Step = { cmd: string; out: string };
+
+const SEQUENCE: Step[] = [
+	{ cmd: "whoami", out: "prabeer" },
+	{ cmd: "cat flag.txt", out: "flag{p1xel_pwn}" },
+	{ cmd: "nmap -sv", out: "22,80,443 open" },
+	{ cmd: "sudo exploit", out: "access granted" },
+];
+
+/*
+ * Every character used by the sequence must exist in the pixel font — the
+ * build fails here rather than shipping blank glyphs.
+ */
+for (const { cmd, out } of SEQUENCE) {
+	for (const ch of `${PROMPT}${cmd}${out}`.toUpperCase()) {
+		if (!GLYPHS[ch]) throw new Error(`TerminalArt: glyph missing for "${ch}"`);
+	}
+}
+
+/* --------------------------- static SSR frame ------------------------------ */
+
+interface Cell {
+	x: number;
+	y: number;
+	fill: string;
+}
+
+const frameCells: Cell[] = [];
+/** Outer frame. */
+for (let x = 0; x < COLS; x++) {
+	frameCells.push({ x, y: 0, fill: "var(--border-strong)" });
+	frameCells.push({ x, y: 2, fill: "var(--border-strong)" });
+	frameCells.push({ x, y: ROWS - 1, fill: "var(--border-strong)" });
+}
+for (let y = 0; y < ROWS; y++) {
+	frameCells.push({ x: 0, y, fill: "var(--border-strong)" });
+	frameCells.push({ x: COLS - 1, y, fill: "var(--border-strong)" });
+}
+/** Title bar between the rules, with three window dots. */
+const DOTS: [number, string][] = [
+	[3, "#ff6b6b"],
+	[5, "#ffd93d"],
+	[7, "var(--brand)"],
+];
+for (let x = 1; x < COLS - 1; x++) {
+	frameCells.push({ x, y: 1, fill: "var(--surface-2)" });
+}
+for (const [x, fill] of DOTS) {
+	frameCells.push({ x, y: 1, fill });
+}
+
+/** One line of text as cells, at a given top row. */
+function textCells(text: string, col: number, row: number, fill: string): Cell[] {
+	const cells: Cell[] = [];
+	for (const [i, ch] of [...text.toUpperCase()].entries()) {
+		const glyph = GLYPHS[ch];
+		if (!glyph) continue;
+		for (const [gy, bits] of glyph.entries()) {
+			for (const bit of [2, 1, 0]) {
+				if ((bits >> bit) & 1) {
+					cells.push({ x: col + i * ADVANCE + (2 - bit), y: row + gy, fill });
+				}
+			}
+		}
+	}
+	return cells;
+}
+
+const first = SEQUENCE[0];
+const staticCells: Cell[] = [
+	...textCells(`${PROMPT}${first.cmd}`, PAD, LINE_ROWS[0], "var(--brand)"),
+	...textCells(first.out, PAD, LINE_ROWS[1], "var(--text-secondary)"),
+];
+const cursorCol = PAD + textWidth(`${PROMPT}${first.out}`) + 1;
+---
+
+<svg
+	class="terminal-art"
+	viewBox={`0 0 ${COLS} ${ROWS}`}
+	shape-rendering="crispEdges"
+	role="img"
+	aria-label="Animated pixel terminal typing security commands"
+>
+	{frameCells.map((cell) => (
+		<rect x={cell.x} y={cell.y} width={1.02} height={1.02} fill={cell.fill} />
+	))}
+	<g class="screen">
+		{staticCells.map((cell) => (
+			<rect x={cell.x} y={cell.y} width={1.02} height={1.02} fill={cell.fill} />
+		))}
+	</g>
+	<rect
+		class="cursor"
+		x={cursorCol}
+		y={LINE_ROWS[0]}
+		width={CHAR_W}
+		height={CHAR_H}
+		fill="var(--brand)"
+	/>
+</svg>
+
+<script>
+	import { GLYPHS, ADVANCE, CHAR_W, CHAR_H, textWidth } from "../lib/pixel-font";
+
+	/*
+		Mirrors the frontmatter geometry and sequence. The two stay in sync
+		because the frontmatter throws the build if a glyph is missing, and a
+		geometry drift here would show up immediately as a broken frame.
+	*/
+	const PAD = 2;
+	const TEXT_TOP = 4;
+	const LINE_ROWS: [number, number] = [TEXT_TOP, TEXT_TOP + CHAR_H + 1];
+	const PROMPT = "> ";
+
+	const SEQUENCE: { cmd: string; out: string }[] = [
+		{ cmd: "whoami", out: "prabeer" },
+		{ cmd: "cat flag.txt", out: "flag{p1xel_pwn}" },
+		{ cmd: "nmap -sv", out: "22,80,443 open" },
+		{ cmd: "sudo exploit", out: "access granted" },
+	];
+
+	const TYPE_MS = 90;
+	const OUTPUT_MS = 450;
+	const HOLD_MS = 1600;
+	const FINAL_HOLD_MS = 2600;
+
+	const svg = document.querySelector<SVGElement>(".terminal-art");
+	if (svg && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		const screen = svg.querySelector<SVGElement>(".screen");
+		const cursor = svg.querySelector<SVGRectElement>(".cursor");
+		const NS = "http://www.w3.org/2000/svg";
+
+		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+		/** Draws one line of pixel text into the screen group. */
+		const draw = (text: string, row: number, fill: string) => {
+			const col = PAD;
+			for (const [i, ch] of [...text.toUpperCase()].entries()) {
+				const glyph = GLYPHS[ch];
+				if (!glyph) continue;
+				for (const [gy, bits] of glyph.entries()) {
+					for (const bit of [2, 1, 0]) {
+						if ((bits >> bit) & 1) {
+							const rect = document.createElementNS(NS, "rect");
+							rect.setAttribute("x", String(col + i * ADVANCE + (2 - bit)));
+							rect.setAttribute("y", String(row + gy));
+							rect.setAttribute("width", "1.02");
+							rect.setAttribute("height", "1.02");
+							rect.setAttribute("fill", fill);
+							screen?.appendChild(rect);
+						}
+					}
+				}
+			}
+		};
+
+		const clear = () => {
+			while (screen?.firstChild) screen.firstChild.remove();
+		};
+
+		const parkCursor = (col: number, row: number) => {
+			cursor?.setAttribute("x", String(col));
+			cursor?.setAttribute("y", String(row));
+		};
+
+		const run = async () => {
+			for (;;) {
+				for (const step of SEQUENCE) {
+					clear();
+					const command = `${PROMPT}${step.cmd}`;
+
+					// Type the command character by character, cursor on its tail.
+					for (const [i] of [...command].entries()) {
+						clear();
+						draw(command.slice(0, i + 1), LINE_ROWS[0], "var(--brand)");
+						parkCursor(PAD + textWidth(command.slice(0, i + 1)) + 1, LINE_ROWS[0]);
+						await sleep(TYPE_MS);
+					}
+
+					// Print the output line, cursor parked under it.
+					await sleep(OUTPUT_MS);
+					draw(step.out, LINE_ROWS[1], "var(--text-secondary)");
+					parkCursor(PAD + textWidth(step.out) + 1, LINE_ROWS[1]);
+					await sleep(HOLD_MS);
+				}
+				// Park on a bare prompt before the loop restarts.
+				clear();
+				draw(PROMPT, LINE_ROWS[0], "var(--brand)");
+				parkCursor(PAD + textWidth(PROMPT) + 1, LINE_ROWS[0]);
+				await sleep(FINAL_HOLD_MS);
+			}
+		};
+
+		run();
+	}
+</script>
+
+<style>
+	.terminal-art {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.cursor {
+		animation: cursor-blink 1.1s step-end infinite;
+	}
+
+	@keyframes cursor-blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cursor {
+			animation: none;
+		}
+	}
+</style>

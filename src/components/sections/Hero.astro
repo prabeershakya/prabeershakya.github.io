@@ -1,46 +1,7 @@
 ---
 import { profile } from "../../data/profile";
-import PixelArt from "../PixelArt.astro";
-
-/*
- * The hero's pixel terminal. Character roles:
- * `f` frame · `t` title bar · `r`/`y`/`g` window dots · `X` prompt arrow ·
- * `x` output text bar · `p` progress fill · `c` blinking cursor.
- */
-const TERMINAL = [
-	"..........................................",
-	".ffffffffffffffffffffffffffffffffffffffff.",
-	".frryygttttttttttttttttttttttttttttttttff.",
-	".ffffffffffffffffffffffffffffffffffffffff.",
-	".f......................................f.",
-	".f..XX..................................f.",
-	".f..xxxxxxxxxxxxx.......................f.",
-	".f......................................f.",
-	".f..XX.....xxxxxx.......................f.",
-	".f......................................f.",
-	".f..XX..................................f.",
-	".f..xxxxxxxxxxxxxxxxxxxxxx..............f.",
-	".f..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx....f.",
-	".f......................................f.",
-	".f..XX....ppppppppppppppp...............f.",
-	".f......................................f.",
-	".f..XX...c..............................f.",
-	".f......................................f.",
-	".ffffffffffffffffffffffffffffffffffffffff.",
-	"..........................................",
-];
-
-const TERMINAL_PALETTE = {
-	f: "var(--border-strong)",
-	t: "var(--surface-2)",
-	r: "#ff6b6b",
-	y: "#ffd93d",
-	g: "var(--brand)",
-	X: "var(--brand)",
-	x: "var(--text-secondary)",
-	p: "var(--brand)",
-	c: "var(--brand)",
-} as Record<string, string>;
+import TerminalArt from "../TerminalArt.astro";
+import MarkDraw from "../MarkDraw.astro";
 ---
 
 <section id="top" class="hero">
@@ -58,7 +19,8 @@ const TERMINAL_PALETTE = {
 			</h1>
 
 			<p class="hero-tag reveal">
-				<span class="strike">hacks</span> ethically
+				<span class="strike">hacks</span>
+				<MarkDraw>ethically</MarkDraw>
 				<span class="hl" aria-hidden="true">
 					.
 				</span>
@@ -86,7 +48,7 @@ const TERMINAL_PALETTE = {
 
 		<div class="hero-right reveal">
 			<div class="terminal card">
-				<PixelArt map={TERMINAL} palette={TERMINAL_PALETTE} blink="c" />
+				<TerminalArt />
 			</div>
 			<p class="hero-quote">
 				<span class="mono status-line">

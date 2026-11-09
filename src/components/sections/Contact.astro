@@ -1,5 +1,6 @@
 ---
 import { profile, handles } from "../../data/profile";
+import Icon from "../Icon.astro";
 ---
 
 <section id="contact" class="section">
@@ -17,6 +18,9 @@ import { profile, handles } from "../../data/profile";
 
 		<div class="way-list reveal">
 			<a class="way card" data-hoverable href={`mailto:${profile.email}`}>
+				<span class="way-icon" aria-hidden="true">
+					<Icon name="mail" />
+				</span>
 				<span class="way-label mono">email</span>
 				<span class="way-value mono">{profile.email}</span>
 				<span class="way-arrow" aria-hidden="true">
@@ -24,6 +28,9 @@ import { profile, handles } from "../../data/profile";
 				</span>
 			</a>
 			<a class="way card" data-hoverable href={profile.github} target="_blank" rel="noopener">
+				<span class="way-icon" aria-hidden="true">
+					<Icon name="github" />
+				</span>
 				<span class="way-label mono">github</span>
 				<span class="way-value mono">{handles.github}</span>
 				<span class="way-arrow" aria-hidden="true">
@@ -31,6 +38,9 @@ import { profile, handles } from "../../data/profile";
 				</span>
 			</a>
 			<a class="way card" data-hoverable href={profile.linkedin} target="_blank" rel="noopener">
+				<span class="way-icon" aria-hidden="true">
+					<Icon name="linkedin" />
+				</span>
 				<span class="way-label mono">linkedin</span>
 				<span class="way-value mono">{handles.linkedin}</span>
 				<span class="way-arrow" aria-hidden="true">
@@ -38,6 +48,9 @@ import { profile, handles } from "../../data/profile";
 				</span>
 			</a>
 			<a class="way card" data-hoverable href={profile.hackthebox} target="_blank" rel="noopener">
+				<span class="way-icon" aria-hidden="true">
+					<Icon name="hackthebox" />
+				</span>
 				<span class="way-label mono">hackthebox</span>
 				<span class="way-value mono">Prabeer Shakya</span>
 				<span class="way-arrow" aria-hidden="true">
@@ -45,6 +58,9 @@ import { profile, handles } from "../../data/profile";
 				</span>
 			</a>
 			<a class="way card" data-hoverable href={profile.tryhackme} target="_blank" rel="noopener">
+				<span class="way-icon" aria-hidden="true">
+					<Icon name="tryhackme" />
+				</span>
 				<span class="way-label mono">tryhackme</span>
 				<span class="way-value mono">{handles.tryhackme}</span>
 				<span class="way-arrow" aria-hidden="true">
@@ -76,6 +92,37 @@ import { profile, handles } from "../../data/profile";
 		gap: 1rem;
 		padding: 1rem 1.2rem;
 		text-decoration: none;
+	}
+
+	/*
+		Hairline icon box, matching the card language. The icon inherits the
+		row's colour and takes the brand on hover with the row.
+	*/
+	.way-icon {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 38px;
+		height: 38px;
+		color: var(--text-secondary);
+		background: var(--surface-2);
+		box-shadow: 0 0 0 1px var(--border-subtle);
+		transition:
+			color var(--ease),
+			box-shadow var(--ease);
+	}
+
+	.way-icon :global(svg) {
+		width: 20px;
+		height: 20px;
+	}
+
+	@media (hover: hover) {
+		.way:hover .way-icon {
+			color: var(--brand);
+			box-shadow: 0 0 0 1px var(--border-strong);
+		}
 	}
 
 	.way-label {

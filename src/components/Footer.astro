@@ -1,5 +1,6 @@
 ---
 import { profile } from "../data/profile";
+import Icon from "./Icon.astro";
 
 const year = new Date().getFullYear();
 ---
@@ -16,11 +17,11 @@ const year = new Date().getFullYear();
 		<p class="foot-mono mono">© {year} PRABEER MAN SHAKYA</p>
 		<p class="foot-links mono">
 			<a href={profile.github} target="_blank" rel="noopener">
-				github
+				<Icon name="github" size={13} /> github
 			</a>
 			<span aria-hidden="true">·</span>
 			<a href={profile.linkedin} target="_blank" rel="noopener">
-				linkedin
+				<Icon name="linkedin" size={13} /> linkedin
 			</a>
 		</p>
 	</div>
@@ -87,6 +88,9 @@ const year = new Date().getFullYear();
 	}
 
 	.foot-links a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
 		color: var(--text-secondary);
 		text-decoration: none;
 		padding-block: 0.24rem;
