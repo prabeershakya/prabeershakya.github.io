@@ -1,0 +1,92 @@
+---
+---
+
+<section id="about" class="section">
+	<div class="container about-inner">
+		<div class="section-head reveal">
+			<p class="sec-label">01 — about</p>
+			<h2 class="section-title">
+				So, who is <span class="hl">PRABEER</span>?
+			</h2>
+		</div>
+
+		<div class="about-grid">
+			<div class="about-copy reveal">
+				<p>
+					I'm a cyber security learner who fell down a rabbit hole the day I realised the internet
+					isn't magic — it's requests, headers, servers and assumptions. Now I spend my free time
+					breaking things <em>on purpose</em>, then figuring out how to fix them.
+				</p>
+				<p>
+					Right now I'm grinding through web application pentesting — the OWASP Top 10, Burp Suite,
+					SQLmap and all the weird edge-cases in between.
+				</p>
+				<p class="about-actions">
+					<a class="btn" href="#projects">
+						see where i apply this ↓
+					</a>
+				</p>
+			</div>
+
+			<blockquote class="about-pull reveal">
+				"i don't hack people. i hack systems —<br />
+				so the good guys win."
+				<footer class="about-signature mono">— PRABEER</footer>
+			</blockquote>
+		</div>
+	</div>
+</section>
+
+<style>
+	.about-inner {
+		max-width: none;
+	}
+
+	.about-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: clamp(2rem, 5vw, 4rem);
+		align-items: start;
+	}
+
+	.about-copy p {
+		max-width: 58ch;
+		color: var(--text-secondary);
+		margin-bottom: 1rem;
+		text-wrap: pretty;
+	}
+
+	.about-copy em {
+		color: var(--brand);
+		font-style: normal;
+	}
+
+	.about-actions {
+		margin-top: 1.4rem;
+	}
+
+	.about-pull {
+		margin: 0;
+		padding: 1.4rem 1.5rem;
+		background: var(--surface);
+		box-shadow: var(--elevation);
+		font-family: var(--font-mono);
+		font-size: clamp(1rem, 1.8vw, 1.2rem);
+		line-height: 1.6;
+		color: var(--text);
+	}
+
+	.about-signature {
+		margin-top: 1rem;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--brand);
+	}
+
+	@media (max-width: 860px) {
+		.about-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

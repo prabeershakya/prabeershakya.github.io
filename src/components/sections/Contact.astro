@@ -1,0 +1,118 @@
+---
+import { profile, handles } from "../../data/profile";
+---
+
+<section id="contact" class="section">
+	<div class="container">
+		<div class="section-head reveal">
+			<p class="sec-label">06 — contact</p>
+			<h2 class="section-title">
+				WANT TO TALK <span class="hl">SECURITY</span>?
+			</h2>
+			<p class="contact-copy">
+				Internships, CTF collabs, weird vulns or just nerding out over packet captures — my inbox is
+				open.
+			</p>
+		</div>
+
+		<div class="way-list reveal">
+			<a class="way card" data-hoverable href={`mailto:${profile.email}`}>
+				<span class="way-label mono">email</span>
+				<span class="way-value mono">{profile.email}</span>
+				<span class="way-arrow" aria-hidden="true">
+					↗
+				</span>
+			</a>
+			<a class="way card" data-hoverable href={profile.github} target="_blank" rel="noopener">
+				<span class="way-label mono">github</span>
+				<span class="way-value mono">{handles.github}</span>
+				<span class="way-arrow" aria-hidden="true">
+					↗
+				</span>
+			</a>
+			<a class="way card" data-hoverable href={profile.linkedin} target="_blank" rel="noopener">
+				<span class="way-label mono">linkedin</span>
+				<span class="way-value mono">{handles.linkedin}</span>
+				<span class="way-arrow" aria-hidden="true">
+					↗
+				</span>
+			</a>
+			<a class="way card" data-hoverable href={profile.hackthebox} target="_blank" rel="noopener">
+				<span class="way-label mono">hackthebox</span>
+				<span class="way-value mono">Prabeer Shakya</span>
+				<span class="way-arrow" aria-hidden="true">
+					↗
+				</span>
+			</a>
+			<a class="way card" data-hoverable href={profile.tryhackme} target="_blank" rel="noopener">
+				<span class="way-label mono">tryhackme</span>
+				<span class="way-value mono">{handles.tryhackme}</span>
+				<span class="way-arrow" aria-hidden="true">
+					↗
+				</span>
+			</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.contact-copy {
+		font-size: 1rem;
+		color: var(--text-secondary);
+		max-width: 54ch;
+		text-wrap: pretty;
+	}
+
+	.way-list {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.9rem;
+		max-width: 56rem;
+	}
+
+	.way {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem 1.2rem;
+		text-decoration: none;
+	}
+
+	.way-label {
+		flex: none;
+		width: 5.5rem;
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+
+	.way-value {
+		flex: 1;
+		min-width: 0;
+		font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+		font-weight: 500;
+		color: var(--text);
+		overflow-wrap: anywhere;
+	}
+
+	.way-arrow {
+		flex: none;
+		color: var(--brand);
+		font-size: 1rem;
+	}
+
+	@media (max-width: 640px) {
+		.way-list {
+			grid-template-columns: 1fr;
+		}
+
+		.way {
+			flex-wrap: wrap;
+		}
+
+		.way-label {
+			width: auto;
+		}
+	}
+</style>

@@ -1,0 +1,453 @@
+---
+import { profile } from "../../data/profile";
+import { teams, placeLabel, ctftimeFetched } from "../../data/teams";
+import { repos } from "../../data/projects";
+import { writeups } from "../../data/writeups";
+import PixelArt from "../PixelArt.astro";
+
+/** How many results a team shows. Six tiles fill the grid without crowding. */
+const ENTRY_CAP = 6;
+
+/**
+ * Whether a meta value is worth rendering. Guards against a literal dash
+ * being stored as a "no data" placeholder, which would print a trailing "—".
+ */
+const hasValue = (value?: string) => Boolean(value && !/^[\s—–-]+$/.test(value));
+
+/*
+ * Stats band, omarchy's "momentum by the numbers". Every figure is derived
+ * from the data files — nothing here is typed by hand, so the band can never
+ * disagree with the sections below it.
+ */
+const bestPlace = Math.min(...teams.flatMap((t) => t.results.map((r) => r.place)));
+const totalEvents = teams.reduce((sum, t) => sum + t.totalEvents, 0);
+
+const stats = [
+	{ value: placeLabel(bestPlace), label: "best CTF finish" },
+	{ value: String(totalEvents), label: "CTF events on record" },
+	{ value: String(writeups.length), label: "writeups published" },
+	{ value: String(repos.length), label: "repos on github" },
+];
+
+/** Pixel trophy for the stats band. `b` brand, `d` dark ink, `.` transparent. */
+const TROPHY = [
+	"bbbbbbbbbbbbbbbbbb",
+	"bbdbbdbbdbbdbbdbbb",
+	"bbbbbbbbbbbbbbbbbb",
+	".bbbbbbbbbbbbbbbb.",
+	"..bbbbbbbbbbbbbb..",
+	"...bbbbbbbbbbbb...",
+	"....bbbbbbbbbb....",
+	"......bbbbbb......",
+	".......bbbb.......",
+	".......bbbb.......",
+	"......bbbbbb......",
+	"....bbbbbbbbbb....",
+];
+---
+
+<section id="achievements" class="section">
+	<div class="container">
+		<div class="section-head reveal">
+			<p class="sec-label">03 — achievements</p>
+			<h2 class="section-title">
+				SHIP IT, <span class="hl">THEN SHOW IT</span>
+			</h2>
+		</div>
+
+		<div class="stats reveal">
+			<div class="stats-art" aria-hidden="true">
+				<PixelArt map={TROPHY} palette={{ b: "var(--brand)", d: "var(--brand-ink)" }} />
+			</div>
+			{stats.map((stat) => (
+				<div class="stat">
+					<span class="stat-value">{stat.value}</span>
+					<span class="stat-label">{stat.label}</span>
+				</div>
+			))}
+		</div>
+
+		<div class="plat reveal">
+			<a
+				class="plat-item card"
+				data-hoverable
+				href={profile.tryhackme}
+				target="_blank"
+				rel="noopener"
+			>
+				<span class="plat-rank">Top 1%</span>
+				<span class="plat-name mono">tryhackme</span>
+			</a>
+			<a
+				class="plat-item card"
+				data-hoverable
+				href={profile.hackthebox}
+				target="_blank"
+				rel="noopener"
+			>
+				<span class="plat-rank">Hacker</span>
+				<span class="plat-name mono">hackthebox</span>
+			</a>
+		</div>
+
+		<div class="tm reveal" data-team-tabs>
+			<div class="tm-tablist" role="tablist" aria-label="CTF teams">
+				{teams.map((team, i) => (
+					<button
+						class="tm-tab"
+						type="button"
+						role="tab"
+						id={`tm-tab-${team.id}`}
+						aria-controls={`tm-panel-${team.id}`}
+						aria-selected={i === 0 ? "true" : "false"}
+						tabindex={i === 0 ? 0 : -1}
+						data-team-tab={i}
+					>
+						{team.short}
+						<span class="tm-tab-count">
+							{Math.min(ENTRY_CAP, team.results.length)}
+							{team.results.length > ENTRY_CAP && <span aria-hidden="true">+</span>}
+						</span>
+					</button>
+				))}
+			</div>
+
+			{teams.map((team, i) => (
+				<div
+					class="tm-panel"
+					role="tabpanel"
+					id={`tm-panel-${team.id}`}
+					aria-labelledby={`tm-tab-${team.id}`}
+					data-team-panel={i}
+					hidden={i !== 0}
+				>
+					<p class="tm-standing mono">
+						<span class="tm-team-name">{team.name}</span>
+						{team.standing}
+					</p>
+
+					<div class="tm-grid">
+						{[...team.results]
+							.sort((a, b) => a.place - b.place)
+							.slice(0, ENTRY_CAP)
+							.map((result, j) => (
+								<a
+									class:list={[
+										"tm-tile card",
+										j % 2 === 0 ? "col-left" : "col-right",
+										j === 0 && "tm-lead",
+									]}
+									data-hoverable
+									href={result.url ?? team.url}
+									target="_blank"
+									rel="noopener"
+								>
+									<span class="tm-tile-place">{placeLabel(result.place)}</span>
+									<span class="tm-tile-event">{result.event}</span>
+									{(hasValue(result.scale) || hasValue(result.points)) && (
+										<span class="tm-tile-meta mono">
+											{hasValue(result.scale) && <span>{result.scale}</span>}
+											{hasValue(result.points) && <span class="tm-tile-pts">{result.points}</span>}
+										</span>
+									)}
+								</a>
+							))}
+					</div>
+
+					<a class="tm-foot mono" href={team.url} target="_blank" rel="noopener">
+						{ctftimeFetched ? "live from ctftime" : "curated"} · all {team.totalEvents} events on
+						record →
+					</a>
+				</div>
+			))}
+		</div>
+	</div>
+</section>
+
+<script>
+	/*
+		Standard ARIA tabs: click to select, arrow keys / Home / End to move,
+		roving tabindex so the tablist is a single tab stop.
+	*/
+	document.querySelectorAll("[data-team-tabs]").forEach((root) => {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-team-tab]")];
+		const panels = [...root.querySelectorAll<HTMLElement>("[data-team-panel]")];
+
+		const select = (next: number) => {
+			tabs.forEach((tab, i) => {
+				const on = i === next;
+				tab.setAttribute("aria-selected", String(on));
+				tab.tabIndex = on ? 0 : -1;
+			});
+			panels.forEach((panel, i) => {
+				panel.hidden = i !== next;
+			});
+		};
+
+		tabs.forEach((tab, i) => {
+			tab.addEventListener("click", () => select(i));
+			tab.addEventListener("keydown", (event: KeyboardEvent) => {
+				const last = tabs.length - 1;
+				let next: number | null = null;
+				if (event.key === "ArrowRight") next = i === last ? 0 : i + 1;
+				else if (event.key === "ArrowLeft") next = i === 0 ? last : i - 1;
+				else if (event.key === "Home") next = 0;
+				else if (event.key === "End") next = last;
+				if (next === null) return;
+				event.preventDefault();
+				select(next);
+				tabs[next].focus();
+			});
+		});
+	});
+</script>
+
+<style>
+	/* ------------------------------ stats band ------------------------------ */
+
+	.stats {
+		display: grid;
+		grid-template-columns: auto repeat(4, 1fr);
+		align-items: center;
+		gap: clamp(1rem, 3vw, 2.5rem);
+		background: var(--bg-deep);
+		border: 1px solid var(--border-subtle);
+		padding: clamp(1.2rem, 3vw, 1.8rem) clamp(1.4rem, 3.5vw, 2.4rem);
+		margin-bottom: 1.4rem;
+	}
+
+	.stats-art :global(svg) {
+		width: 44px;
+		height: auto;
+	}
+
+	.stat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+
+	.stat-value {
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 3vw, 2.2rem);
+		color: var(--brand);
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.stat-label {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+
+	/* --------------------------- platform strip ----------------------------- */
+
+	.plat {
+		display: flex;
+		gap: 0.9rem;
+		margin-bottom: 1.6rem;
+	}
+
+	.plat-item {
+		flex: 1;
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		padding: 0.6rem 0.9rem;
+		text-decoration: none;
+	}
+
+	.plat-rank {
+		font-weight: 600;
+		font-size: 0.95rem;
+		color: var(--brand);
+		white-space: nowrap;
+	}
+
+	.plat-name {
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* ---------------------------- team switcher ----------------------------- */
+
+	.tm {
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+	}
+
+	.tm-tablist {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.tm-tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-secondary);
+		background: var(--surface);
+		border: 0;
+		box-shadow: var(--elevation);
+		padding: 0.42rem 0.7rem;
+		cursor: pointer;
+		transition:
+			background var(--ease),
+			color var(--ease),
+			box-shadow var(--ease);
+	}
+
+	@media (hover: hover) {
+		.tm-tab:hover {
+			color: var(--text);
+			box-shadow: var(--elevation-hover);
+		}
+	}
+
+	.tm-tab-count {
+		background: var(--brand-soft);
+		color: var(--brand);
+		padding: 0 0.3rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.tm-tab[aria-selected="true"] {
+		background: var(--brand);
+		color: var(--brand-ink);
+	}
+
+	.tm-tab[aria-selected="true"] .tm-tab-count {
+		background: var(--brand-ink);
+		color: var(--brand);
+	}
+
+	.tm-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+	}
+
+	.tm-panel[hidden] {
+		display: none;
+	}
+
+	.tm-standing {
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+	}
+
+	.tm-team-name {
+		color: var(--text);
+		font-weight: 700;
+		margin-right: 0.4rem;
+	}
+
+	/*
+		Two columns; the lead result spans both. Rows are auto, so a tile is
+		exactly as tall as its content — no magic heights to tune.
+	*/
+	.tm-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.9rem;
+	}
+
+	.tm-tile {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		padding: 1rem 1.15rem;
+		text-decoration: none;
+		min-width: 0;
+	}
+
+	.tm-lead {
+		grid-column: 1 / -1;
+	}
+
+	.tm-tile-place {
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 3vw, 2.2rem);
+		line-height: 1;
+		color: var(--brand);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.tm-lead .tm-tile-place {
+		font-size: clamp(2rem, 4.4vw, 3.2rem);
+	}
+
+	.tm-tile-event {
+		font-weight: 500;
+		font-size: 0.92rem;
+		color: var(--text);
+		overflow-wrap: anywhere;
+	}
+
+	.tm-tile-meta {
+		margin-top: auto;
+		padding-top: 0.25rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.5rem;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-muted);
+	}
+
+	.tm-tile-pts {
+		color: var(--text-secondary);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.tm-foot {
+		align-self: flex-start;
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-secondary);
+		text-decoration: none;
+		border-bottom: 1px solid var(--brand);
+		padding-block: 0.2rem;
+		transition: color var(--ease);
+	}
+
+	@media (hover: hover) {
+		.tm-foot:hover {
+			color: var(--brand);
+		}
+	}
+
+	@media (max-width: 860px) {
+		.stats {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.stats-art {
+			display: none;
+		}
+
+		.tm-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

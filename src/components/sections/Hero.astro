@@ -1,0 +1,235 @@
+---
+import { profile } from "../../data/profile";
+import PixelArt from "../PixelArt.astro";
+
+/*
+ * The hero's pixel terminal. Character roles:
+ * `f` frame · `t` title bar · `r`/`y`/`g` window dots · `X` prompt arrow ·
+ * `x` output text bar · `p` progress fill · `c` blinking cursor.
+ */
+const TERMINAL = [
+	"..........................................",
+	".ffffffffffffffffffffffffffffffffffffffff.",
+	".frryygttttttttttttttttttttttttttttttttff.",
+	".ffffffffffffffffffffffffffffffffffffffff.",
+	".f......................................f.",
+	".f..XX..................................f.",
+	".f..xxxxxxxxxxxxx.......................f.",
+	".f......................................f.",
+	".f..XX.....xxxxxx.......................f.",
+	".f......................................f.",
+	".f..XX..................................f.",
+	".f..xxxxxxxxxxxxxxxxxxxxxx..............f.",
+	".f..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx....f.",
+	".f......................................f.",
+	".f..XX....ppppppppppppppp...............f.",
+	".f......................................f.",
+	".f..XX...c..............................f.",
+	".f......................................f.",
+	".ffffffffffffffffffffffffffffffffffffffff.",
+	"..........................................",
+];
+
+const TERMINAL_PALETTE = {
+	f: "var(--border-strong)",
+	t: "var(--surface-2)",
+	r: "#ff6b6b",
+	y: "#ffd93d",
+	g: "var(--brand)",
+	X: "var(--brand)",
+	x: "var(--text-secondary)",
+	p: "var(--brand)",
+	c: "var(--brand)",
+} as Record<string, string>;
+---
+
+<section id="top" class="hero">
+	<div class="container hero-inner">
+		<div class="hero-left">
+			<p class="sec-label reveal">portfolio // cyber security learner</p>
+
+			<h1 class="hero-name reveal">
+				PRABEER MAN
+				<br />
+				<span class="hl">SHAKYA</span>
+				<span class="cursor" aria-hidden="true">
+					_
+				</span>
+			</h1>
+
+			<p class="hero-tag reveal">
+				<span class="strike">hacks</span> ethically
+				<span class="hl" aria-hidden="true">
+					.
+				</span>
+			</p>
+
+			<div class="chip-row reveal">
+				<span class="chip">
+					<span class="chip-dot"></span> open to internships
+				</span>
+				<span class="chip">
+					<span class="chip-dot"></span> currently: pentesting
+				</span>
+				<span class="chip">toolkit: nmap · burp · wireshark</span>
+			</div>
+
+			<div class="hero-cta reveal">
+				<a class="btn btn-accent" href="#projects">
+					view work
+				</a>
+				<a class="btn" href={profile.linkedin} target="_blank" rel="noopener">
+					linkedin ↗
+				</a>
+			</div>
+		</div>
+
+		<div class="hero-right reveal">
+			<div class="terminal card">
+				<PixelArt map={TERMINAL} palette={TERMINAL_PALETTE} blink="c" />
+			</div>
+			<p class="hero-quote">
+				<span class="mono status-line">
+					<span class="pulse" aria-hidden="true"></span> online / learning
+				</span>
+				learning the depth of the web, one strand at a time.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		min-height: calc(100svh - var(--nav-h));
+		display: flex;
+		align-items: center;
+		padding-block: clamp(3rem, 8vh, 5rem) clamp(2rem, 5vh, 3rem);
+	}
+
+	.hero-inner {
+		display: flex;
+		align-items: center;
+		gap: clamp(2rem, 5vw, 4rem);
+	}
+
+	.hero-left {
+		flex: 1 1 60%;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1.4rem;
+	}
+
+	.hero-name {
+		font-size: clamp(2.4rem, 5.6vw, 4.2rem);
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.cursor {
+		color: var(--brand);
+		font-weight: 500;
+		animation: cursor-blink 1.3s step-end infinite;
+	}
+
+	@keyframes cursor-blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.hero-tag {
+		font-family: var(--font-mono);
+		font-size: clamp(1.05rem, 2vw, 1.3rem);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--text-secondary);
+	}
+
+	.strike {
+		text-decoration: line-through 2px var(--brand);
+	}
+
+	.hero-cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+
+	.hero-right {
+		flex: 0 1 40%;
+		max-width: min(100%, 420px);
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.terminal {
+		padding: 1.25rem;
+	}
+
+	.terminal :global(svg) {
+		width: 100%;
+		height: auto;
+	}
+
+	.hero-quote {
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		line-height: 1.7;
+	}
+
+	.status-line {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-secondary);
+		margin-right: 0.5rem;
+	}
+
+	.pulse {
+		width: 8px;
+		height: 8px;
+		flex: none;
+		background: var(--brand);
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.pulse {
+			animation: pulse 2.4s cubic-bezier(0.2, 0, 0, 1) infinite;
+		}
+
+		@keyframes pulse {
+			0% {
+				box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 70%, transparent);
+			}
+			70% {
+				box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 0%, transparent);
+			}
+			100% {
+				box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 0%, transparent);
+			}
+		}
+	}
+
+	@media (max-width: 860px) {
+		.hero-inner {
+			flex-direction: column-reverse;
+		}
+
+		.hero-left,
+		.hero-right {
+			flex: 1 1 auto;
+			width: 100%;
+			max-width: none;
+		}
+	}
+</style>

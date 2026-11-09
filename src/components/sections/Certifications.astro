@@ -1,0 +1,114 @@
+---
+/*
+	`verify` is the public credential/badging URL. Google has no per-certificate
+	verification link to publish, so that entry is listed without one rather
+	than linking to a course page that would not actually verify it.
+*/
+const certs = [
+	{
+		name: "APIsec Certified Practitioner",
+		status: "api security · OWASP API Top 10",
+		verify: "https://www.credly.com/badges/ed433c1e-2480-4190-89c5-617411590548",
+	},
+	{
+		name: "Google Cybersecurity Professional",
+		status: "foundations · career ready",
+		verify: undefined,
+	},
+	{
+		name: "Certified Cybersecurity Educator Professional (CCEP)",
+		status: "teaching security, the right way",
+		verify: "https://courses.redteamleaders.com/exam-completion/e896c352f75253db",
+	},
+];
+---
+
+<section id="certifications" class="section">
+	<div class="container">
+		<div class="section-head reveal">
+			<p class="sec-label">04 — certifications</p>
+			<h2 class="section-title">
+				CERTIFIED <span class="hl">&</span> CREDENTIALED
+			</h2>
+			<p class="section-copy mono">
+				hands-on work first, certificates second — but the paper still helps.
+			</p>
+		</div>
+
+		<div class="cert-list reveal">
+			{certs.map((cert) =>
+				cert.verify ? (
+					<a class="cert card" data-hoverable href={cert.verify} target="_blank" rel="noopener">
+						<span class="cert-row">
+							<span class="cert-name">{cert.name}</span>
+							<span class="cert-status mono">{cert.status}</span>
+						</span>
+						<span class="cert-cta mono">verify →</span>
+					</a>
+				) : (
+					<div class="cert card">
+						<span class="cert-row">
+							<span class="cert-name">{cert.name}</span>
+							<span class="cert-status mono">{cert.status}</span>
+						</span>
+					</div>
+				),
+			)}
+		</div>
+	</div>
+</section>
+
+<style>
+	.section-copy {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.cert-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+		max-width: 56rem;
+	}
+
+	.cert {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.2rem;
+		padding: 1.1rem 1.3rem;
+		text-decoration: none;
+	}
+
+	.cert-row {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		min-width: 0;
+	}
+
+	.cert-name {
+		font-weight: 600;
+		font-size: clamp(1.05rem, 2vw, 1.35rem);
+		letter-spacing: -0.01em;
+		color: var(--text);
+		overflow-wrap: anywhere;
+	}
+
+	.cert-status {
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+	}
+
+	.cert-cta {
+		flex: none;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--brand);
+	}
+</style>

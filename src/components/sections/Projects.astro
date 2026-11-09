@@ -1,0 +1,195 @@
+---
+import { repos, reposSource } from "../../data/projects";
+import { profile } from "../../data/profile";
+import PixelArt from "../PixelArt.astro";
+
+const PROFILE = profile.github;
+
+/* Pixel shield for the section label corner. `f` frame, `b` brand fill, `.` transparent. */
+const SHIELD = [
+	".bbbbbbbbbbbbbbbbbb.",
+	".bbbbbbbbbbbbbbbbbb.",
+	".bbbbbbbbbbbbbbbbbb.",
+	".bbbbbbbbbbbbbbbbbb.",
+	".bbbbbbbbbbbbbbbbbb.",
+	".bbbbbbbbbbbbbbbbbb.",
+	"..bbbbbbbbbbbbbbbb..",
+	"..bbbbbbbbbbbbbbbb..",
+	"...bbbbbbbbbbbbbb...",
+	"....bbbbbbbbbbbb....",
+	"......bbbbbbbb......",
+	"........bbbb........",
+];
+---
+
+<section id="projects" class="section">
+	<div class="container">
+		<div class="section-head reveal">
+			<p class="sec-label">
+				02 — work{" "}
+				<span class="shield" aria-hidden="true">
+					<PixelArt map={SHIELD} palette={{ b: "var(--brand)" }} />
+				</span>
+			</p>
+			<h2 class="section-title">
+				SELECTED <span class="hl">PENTEST</span> WORK
+			</h2>
+			<div class="chip-row">
+				<span class="chip">open source</span>
+				<span class="chip">self-taught</span>
+				<span class="chip">practice == progress</span>
+				<span class="chip">{reposSource === "fetched" ? "live from github" : "snapshot"}</span>
+			</div>
+		</div>
+
+		<div class="repo-grid reveal">
+			{repos.map((repo, i) => (
+				<article class:list={["repo card", i === 0 && "repo-lead"]} data-hoverable>
+					<div class="repo-top">
+						<span class="repo-num mono">{String(i + 1).padStart(2, "0")}</span>
+						<span class="repo-lang tag">{repo.lang}</span>
+					</div>
+					<h3 class="repo-name">{repo.name}</h3>
+					<p class="repo-desc">{repo.desc}</p>
+					<div class="repo-foot">
+						{repo.tags.map((tag) => (
+							<span class="tag">{tag}</span>
+						))}
+						<span class="repo-stats mono">
+							★ {repo.stars} · {repo.forks} forks
+						</span>
+					</div>
+					<a
+						class="repo-link"
+						href={repo.url}
+						target="_blank"
+						rel="noopener"
+						aria-label={`${repo.name} — open on GitHub (new tab)`}
+					/>
+				</article>
+			))}
+		</div>
+
+		<p class="work-foot reveal">
+			<a class="btn" href={PROFILE} target="_blank" rel="noopener">
+				more on github ↗
+			</a>
+		</p>
+	</div>
+</section>
+
+<style>
+	.shield :global(svg) {
+		width: 14px;
+		height: 14px;
+		display: inline-block;
+		vertical-align: -2px;
+		margin-left: 0.4rem;
+	}
+
+	.repo-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.9rem;
+	}
+
+	/* The lead repo spans two columns and gets the larger type. */
+	.repo-lead {
+		grid-column: span 2;
+	}
+
+	.repo {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.55rem;
+		padding: 1.1rem 1.2rem;
+	}
+
+	.repo-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+
+	.repo-num {
+		font-size: 0.68rem;
+		color: var(--text-muted);
+		letter-spacing: 0.1em;
+	}
+
+	.repo-name {
+		font-size: clamp(1rem, 1.5vw, 1.25rem);
+		font-weight: 600;
+	}
+
+	.repo-lead .repo-name {
+		font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+	}
+
+	.repo-desc {
+		font-size: 0.88rem;
+		line-height: 1.5;
+		color: var(--text-secondary);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.repo-lead .repo-desc {
+		-webkit-line-clamp: 3;
+		font-size: 0.95rem;
+	}
+
+	.repo-foot {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: auto;
+		padding-top: 0.3rem;
+	}
+
+	.repo-stats {
+		margin-left: auto;
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* One link stretched across the whole card: the card is a single target
+	   while the visible text stays real headings. */
+	.repo-link {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.work-foot {
+		margin-top: 1.4rem;
+	}
+
+	@media (max-width: 980px) {
+		.repo-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.repo-lead {
+			grid-column: span 2;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.repo-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.repo-lead {
+			grid-column: auto;
+		}
+	}
+</style>

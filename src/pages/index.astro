@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/sections/Hero.astro";
+import Marquee from "../components/Marquee.astro";
+import About from "../components/sections/About.astro";
+import Projects from "../components/sections/Projects.astro";
+import Achievements from "../components/sections/Achievements.astro";
+import Certifications from "../components/sections/Certifications.astro";
+import Writeups from "../components/sections/Writeups.astro";
+import Contact from "../components/sections/Contact.astro";
+
+/*
+	The title carries the em dash itself, so `Base` uses it verbatim instead of
+	appending the name.
+*/
+const TITLE = "Prabeer Man Shakya — Offensive Security & CTF";
+---
+
+<Base title={TITLE}>
+	<Hero />
+	<Marquee />
+	<About />
+	<Projects />
+	<Achievements />
+	<Certifications />
+	<Writeups />
+	<Contact />
+</Base>
