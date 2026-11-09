@@ -1,0 +1,47 @@
+[
+	{
+		"name": "Lupin",
+		"desc": "Simple Username OSINT Tool",
+		"url": "https://github.com/prabeershakya/Lupin",
+		"lang": "Python",
+		"tags": [],
+		"stars": 0,
+		"forks": 0
+	},
+	{
+		"name": "CVE-2022-0185-POC",
+		"desc": "a work in progress.",
+		"url": "https://github.com/prabeershakya/CVE-2022-0185-POC",
+		"lang": "C",
+		"tags": [],
+		"stars": 0,
+		"forks": 0
+	},
+	{
+		"name": "CVE-2021-3490-POC",
+		"desc": "a work in progress.",
+		"url": "https://github.com/prabeershakya/CVE-2021-3490-POC",
+		"lang": "C",
+		"tags": [],
+		"stars": 0,
+		"forks": 0
+	},
+	{
+		"name": "CVE-2023-0179-POC-",
+		"desc": "a work in progress.",
+		"url": "https://github.com/prabeershakya/CVE-2023-0179-POC-",
+		"lang": "C",
+		"tags": [],
+		"stars": 0,
+		"forks": 0
+	},
+	{
+		"name": "HideU-Metadata",
+		"desc": "a work in progress.",
+		"url": "https://github.com/prabeershakya/HideU-Metadata",
+		"lang": "Python",
+		"tags": [],
+		"stars": 0,
+		"forks": 0
+	}
+]

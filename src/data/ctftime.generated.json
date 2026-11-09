@@ -1,0 +1,1232 @@
+{
+	"visored": {
+		"id": 447690,
+		"name": "Team Visored",
+		"url": "https://ctftime.org/team/447690/",
+		"results": [
+			{
+				"event": "CSCTF 2026",
+				"place": 123,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3333/",
+				"points": 20540,
+				"rating": 0
+			},
+			{
+				"event": "2026 Qiangwang Challenge on Cyber Mimic Defense Qualification",
+				"place": 190,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3459/",
+				"points": 3328,
+				"rating": 0
+			},
+			{
+				"event": "HI Cyber Con 2026 CTF",
+				"place": 64,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3460/",
+				"points": 3730,
+				"rating": 18.48
+			},
+			{
+				"event": "Hack.lu CTF 2026",
+				"place": 43,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3207/",
+				"points": 2041,
+				"rating": 50.125
+			},
+			{
+				"event": "RSTCON 2026 CTF",
+				"place": 17,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3377/",
+				"points": 330,
+				"rating": 3.586
+			},
+			{
+				"event": "cruXipher 2026 - ATMoS '26, BITS Hyderabad",
+				"place": 4,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3369/",
+				"points": 2436,
+				"rating": 31.038
+			},
+			{
+				"event": "GaianSpace CTF 2026",
+				"place": 4,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3354/",
+				"points": 9131,
+				"rating": 31.25
+			},
+			{
+				"event": "KubSTU CTF",
+				"place": 63,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3446/",
+				"points": 5783,
+				"rating": 0
+			},
+			{
+				"event": "Cryovault 2026 Quals",
+				"place": 133,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3441/",
+				"points": 1918,
+				"rating": 4.334
+			},
+			{
+				"event": "kBxAc CTF 2026",
+				"place": 38,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3456/",
+				"points": 9871,
+				"rating": 11.541
+			},
+			{
+				"event": "FortID CTF 2026",
+				"place": 52,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3440/",
+				"points": 2860,
+				"rating": 23.078
+			},
+			{
+				"event": "CubeCTF 2026",
+				"place": 65,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3352/",
+				"points": 491.33,
+				"rating": 0.757
+			},
+			{
+				"event": "CSS CTF 2026: Return of Nexus",
+				"place": 21,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3434/",
+				"points": 2066,
+				"rating": 25.415
+			},
+			{
+				"event": "SunshineCTF 2026",
+				"place": 80,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3399/",
+				"points": 10153,
+				"rating": 52.275
+			},
+			{
+				"event": "H7CTF 2026 Quals",
+				"place": 116,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3093/",
+				"points": 4934,
+				"rating": 14.11
+			},
+			{
+				"event": "BCS CTF 2026",
+				"place": 125,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3374/",
+				"points": 1250,
+				"rating": 4.112
+			},
+			{
+				"event": "07CTF 2026",
+				"place": 110,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3365/",
+				"points": 200,
+				"rating": 0.894
+			},
+			{
+				"event": "CSAW CTF Qualification Round 2026",
+				"place": 63,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3355/",
+				"points": 5179,
+				"rating": 6.885
+			},
+			{
+				"event": "DefCamp Capture the Flag (D-CTF) 2026 Quals",
+				"place": 71,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3392/",
+				"points": 704,
+				"rating": 25.16
+			},
+			{
+				"event": "NullOrigin CTF Qualifiers",
+				"place": 229,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3346/",
+				"points": 1710,
+				"rating": 2.438
+			},
+			{
+				"event": "K17 CTF 2026",
+				"place": 76,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3145/",
+				"points": 3722,
+				"rating": 25.157
+			},
+			{
+				"event": "CSCTF 2025",
+				"place": 123,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2980/",
+				"points": 20540,
+				"rating": 0
+			}
+		]
+	},
+	"blue-lock-eleven": {
+		"id": 368467,
+		"name": "Blue Lock Eleven",
+		"url": "https://ctftime.org/team/368467/",
+		"results": [
+			{
+				"event": "H7CTF 2026 Quals",
+				"place": 237,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3093/",
+				"points": 2448,
+				"rating": 6.999
+			},
+			{
+				"event": "BrunnerCTF 2026",
+				"place": 194,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3065/",
+				"points": 3390,
+				"rating": 12.691
+			},
+			{
+				"event": "UIUCTF 2026",
+				"place": 354,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3148/",
+				"points": 100,
+				"rating": 1.542
+			},
+			{
+				"event": "Lexington Informatics Tournament CTF 2026",
+				"place": 79,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3373/",
+				"points": 3881,
+				"rating": 79.61
+			},
+			{
+				"event": "OmniCTF 2026 Quals",
+				"place": 135,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3104/",
+				"points": 641,
+				"rating": 5.645
+			},
+			{
+				"event": "Junior.Crypt.2026 CTF",
+				"place": 125,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3335/",
+				"points": 1814,
+				"rating": 3.508
+			},
+			{
+				"event": "No Hack No CTF 2026",
+				"place": 217,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3180/",
+				"points": 310,
+				"rating": 0.906
+			},
+			{
+				"event": "SekaiCTF 2026",
+				"place": 377,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3113/",
+				"points": 178,
+				"rating": 4.297
+			},
+			{
+				"event": "RIFFHACK: Black Market Break-In",
+				"place": 11,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3297/",
+				"points": 5850,
+				"rating": 0
+			},
+			{
+				"event": "boroCTF 2026",
+				"place": 46,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3309/",
+				"points": 14100,
+				"rating": 19.495
+			},
+			{
+				"event": "GPN CTF 2026",
+				"place": 254,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3041/",
+				"points": 311,
+				"rating": 5.007
+			},
+			{
+				"event": "BYUCTF 2026",
+				"place": 94,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3247/",
+				"points": 4865,
+				"rating": 23.303
+			},
+			{
+				"event": "DEF CON CTF Qualifier 2026",
+				"place": 218,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3205/",
+				"points": 17,
+				"rating": 0.397
+			},
+			{
+				"event": "TJCTF 2026",
+				"place": 363,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3195/",
+				"points": 1420,
+				"rating": 6.147
+			},
+			{
+				"event": "Break The Syntax CTF 2026",
+				"place": 178,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3137/",
+				"points": 150,
+				"rating": 1.569
+			},
+			{
+				"event": "UMDCTF 2026",
+				"place": 385,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3056/",
+				"points": 117,
+				"rating": 2.67
+			},
+			{
+				"event": "b01lers CTF 2026",
+				"place": 327,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3153/",
+				"points": 112,
+				"rating": 0.845
+			},
+			{
+				"event": "BlueHens CTF 2026",
+				"place": 115,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3235/",
+				"points": 1000,
+				"rating": 10.316
+			},
+			{
+				"event": "DawgCTF 2026",
+				"place": 303,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3102/",
+				"points": 1610,
+				"rating": 8.9
+			},
+			{
+				"event": "RITSEC CTF 2026",
+				"place": 157,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3096/",
+				"points": 553,
+				"rating": 4.466
+			},
+			{
+				"event": "KalmarCTF 2026",
+				"place": 297,
+				"year": 2026,
+				"url": "https://ctftime.org/event/2983/",
+				"points": 100,
+				"rating": 0.88
+			},
+			{
+				"event": "TAMUctf 2026",
+				"place": 187,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3095/",
+				"points": 824,
+				"rating": 31.53
+			},
+			{
+				"event": "Midnight Flag CTF - EXECUTION",
+				"place": 69,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3105/",
+				"points": 2378,
+				"rating": 13.331
+			},
+			{
+				"event": "UTCTF 2026",
+				"place": 39,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3133/",
+				"points": 6580,
+				"rating": 36.103
+			},
+			{
+				"event": "DiceCTF 2026 Quals",
+				"place": 316,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3110/",
+				"points": 218,
+				"rating": 8.334
+			},
+			{
+				"event": "ApoorvCTF 2026",
+				"place": 83,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3171/",
+				"points": 3119,
+				"rating": 8.489
+			},
+			{
+				"event": "EHAX CTF 2026",
+				"place": 104,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3127/",
+				"points": 2272,
+				"rating": 5.85
+			},
+			{
+				"event": "BITSCTF 2026",
+				"place": 165,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3122/",
+				"points": 803,
+				"rating": 5.792
+			},
+			{
+				"event": "0xFUN CTF 2026",
+				"place": 271,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3081/",
+				"points": 2104,
+				"rating": 2.005
+			},
+			{
+				"event": "Nullcon Goa HackIM 2026 CTF",
+				"place": 546,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3066/",
+				"points": 1,
+				"rating": 0.05
+			},
+			{
+				"event": "LA CTF 2026",
+				"place": 133,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3015/",
+				"points": 3171,
+				"rating": 21.298
+			},
+			{
+				"event": "Eschaton CTF 2026 Quals",
+				"place": 55,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3072/",
+				"points": 1930,
+				"rating": 9.594
+			},
+			{
+				"event": "0xL4ugh CTF v5",
+				"place": 62,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3024/",
+				"points": 810,
+				"rating": 3.195
+			},
+			{
+				"event": "KnightCTF 2026",
+				"place": 202,
+				"year": 2026,
+				"url": "https://ctftime.org/event/3053/",
+				"points": 1250,
+				"rating": 7.33
+			},
+			{
+				"event": "SWIMMER OSINT CTF",
+				"place": 348,
+				"year": 2026,
+				"url": "https://ctftime.org/event/2986/",
+				"points": 1380,
+				"rating": 0
+			},
+			{
+				"event": "UofTCTF 2026",
+				"place": 161,
+				"year": 2026,
+				"url": "https://ctftime.org/event/2969/",
+				"points": 699,
+				"rating": 5.098
+			},
+			{
+				"event": "hxp 39C3 CTF",
+				"place": 168,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2924/",
+				"points": 118,
+				"rating": 2.891
+			},
+			{
+				"event": "ASIS CTF Finals 2025",
+				"place": 147,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2613/",
+				"points": 151,
+				"rating": 3.192
+			},
+			{
+				"event": "TSG CTF 2025",
+				"place": 59,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2867/",
+				"points": 1535,
+				"rating": 12.341
+			},
+			{
+				"event": "0CTF 2025",
+				"place": 223,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2997/",
+				"points": 24,
+				"rating": 0.659
+			},
+			{
+				"event": "SECCON CTF 14 Quals",
+				"place": 314,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2862/",
+				"points": 109,
+				"rating": 3.426
+			},
+			{
+				"event": "niteCTF 2025",
+				"place": 233,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2851/",
+				"points": 200,
+				"rating": 1.273
+			},
+			{
+				"event": "BackdoorCTF 2025",
+				"place": 92,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2915/",
+				"points": 1300,
+				"rating": 14.483
+			},
+			{
+				"event": "HeroCTF v7",
+				"place": 121,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2869/",
+				"points": 1911,
+				"rating": 10.334
+			},
+			{
+				"event": "PatriotCTF 2025",
+				"place": 47,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2850/",
+				"points": 5202,
+				"rating": 33.292
+			},
+			{
+				"event": "Platypwn 2025",
+				"place": 52,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2606/",
+				"points": 1299,
+				"rating": 3.634
+			},
+			{
+				"event": "BuckeyeCTF 2025",
+				"place": 136,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2883/",
+				"points": 1387,
+				"rating": 7.212
+			},
+			{
+				"event": "N1CTF 2025",
+				"place": 299,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2795/",
+				"points": 33,
+				"rating": 1
+			},
+			{
+				"event": "V1t CTF 2025",
+				"place": 111,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2920/",
+				"points": 2845,
+				"rating": 6.995
+			},
+			{
+				"event": "DEADFACE CTF 2025",
+				"place": 252,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2912/",
+				"points": 1246,
+				"rating": 4.608
+			},
+			{
+				"event": "m0leCon CTF 2026 Teaser",
+				"place": 243,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2946/",
+				"points": 50,
+				"rating": 2.089
+			},
+			{
+				"event": "Hack.lu CTF 2025",
+				"place": 183,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2842/",
+				"points": 200,
+				"rating": 4.137
+			},
+			{
+				"event": "Securinets CTF Quals 2025",
+				"place": 475,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2884/",
+				"points": 1,
+				"rating": 0.156
+			},
+			{
+				"event": "COMPFEST CTF 2025",
+				"place": 106,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2900/",
+				"points": 100,
+				"rating": 1.406
+			},
+			{
+				"event": "SunshineCTF 2025",
+				"place": 241,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2863/",
+				"points": 676,
+				"rating": 4.673
+			},
+			{
+				"event": "CrewCTF 2025",
+				"place": 178,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2704/",
+				"points": 100,
+				"rating": 0.717
+			},
+			{
+				"event": "CSAW CTF Qualification Round 2025",
+				"place": 240,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2903/",
+				"points": 394,
+				"rating": 0.848
+			},
+			{
+				"event": "FortID CTF 2025",
+				"place": 134,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2893/",
+				"points": 700,
+				"rating": 2.681
+			},
+			{
+				"event": "ASIS CTF Quals 2025",
+				"place": 50,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2612/",
+				"points": 356,
+				"rating": 9.853
+			},
+			{
+				"event": "ImaginaryCTF 2025",
+				"place": 222,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2799/",
+				"points": 1500,
+				"rating": 10.083
+			},
+			{
+				"event": "Nullcon Berlin HackIM 2025 CTF",
+				"place": 94,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2874/",
+				"points": 1079,
+				"rating": 4.546
+			},
+			{
+				"event": "corCTF 2025",
+				"place": 51,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2763/",
+				"points": 1372,
+				"rating": 16.742
+			},
+			{
+				"event": "TFC CTF 2025",
+				"place": 362,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2822/",
+				"points": 50,
+				"rating": 0.666
+			},
+			{
+				"event": "Lexington Informatics Tournament CTF 2025",
+				"place": 55,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2890/",
+				"points": 3775,
+				"rating": 38.307
+			},
+			{
+				"event": "HITCON CTF 2025",
+				"place": 138,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2783/",
+				"points": 196,
+				"rating": 4.615
+			},
+			{
+				"event": "SekaiCTF 2025",
+				"place": 388,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2683/",
+				"points": 178,
+				"rating": 1.819
+			},
+			{
+				"event": "WHY2025 CTF",
+				"place": 305,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2680/",
+				"points": 700,
+				"rating": 0
+			},
+			{
+				"event": "idekCTF 2025",
+				"place": 421,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2746/",
+				"points": 200,
+				"rating": 1.278
+			},
+			{
+				"event": "UIUCTF 2025",
+				"place": 199,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2640/",
+				"points": 401,
+				"rating": 8.232
+			},
+			{
+				"event": "Shakti CTF 2025",
+				"place": 130,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2803/",
+				"points": 1000,
+				"rating": 4.808
+			},
+			{
+				"event": "DownUnderCTF 2025",
+				"place": 344,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2669/",
+				"points": 1400,
+				"rating": 11.146
+			},
+			{
+				"event": "Crypto CTF 2025",
+				"place": 290,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2577/",
+				"points": 27,
+				"rating": 0.705
+			},
+			{
+				"event": "L3akCTF 2025",
+				"place": 397,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2629/",
+				"points": 550,
+				"rating": 0.99
+			},
+			{
+				"event": "R3CTF 2025",
+				"place": 323,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2731/",
+				"points": 200,
+				"rating": 0.298
+			},
+			{
+				"event": "Hack The System - Bug Bounty CTF",
+				"place": 296,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2829/",
+				"points": 725,
+				"rating": 3.991
+			},
+			{
+				"event": "IERAE CTF 2025 - GMO Cybersecurity Contest",
+				"place": 245,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2655/",
+				"points": 398,
+				"rating": 2.191
+			},
+			{
+				"event": "GPN CTF 2025",
+				"place": 133,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2694/",
+				"points": 313,
+				"rating": 3.577
+			},
+			{
+				"event": "smileyCTF 2025",
+				"place": 502,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2591/",
+				"points": 60,
+				"rating": 0.449
+			},
+			{
+				"event": "bi0sCTF 2025",
+				"place": 323,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2672/",
+				"points": 10,
+				"rating": 0.343
+			},
+			{
+				"event": "TJCTF 2025",
+				"place": 121,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2809/",
+				"points": 5038,
+				"rating": 19.971
+			},
+			{
+				"event": "Grey Cat The Flag 2025",
+				"place": 223,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2765/",
+				"points": 871,
+				"rating": 1.788
+			},
+			{
+				"event": "N0PSctf",
+				"place": 389,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2486/",
+				"points": 500,
+				"rating": 1.464
+			},
+			{
+				"event": "D^3CTF 2025",
+				"place": 518,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2770/",
+				"points": 200,
+				"rating": 1.632
+			},
+			{
+				"event": "SAS CTF 2025 Quals",
+				"place": 130,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2636/",
+				"points": 100,
+				"rating": 0.359
+			},
+			{
+				"event": "NahamCon CTF 2025",
+				"place": 279,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2782/",
+				"points": 1742,
+				"rating": 6.096
+			},
+			{
+				"event": "Midnight Sun CTF 2025 Quals",
+				"place": 239,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2632/",
+				"points": 61,
+				"rating": 1.683
+			},
+			{
+				"event": "BYUCTF 2025",
+				"place": 274,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2715/",
+				"points": 1178,
+				"rating": 3.776
+			},
+			{
+				"event": "DamCTF 2025",
+				"place": 232,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2585/",
+				"points": 478,
+				"rating": 3.929
+			},
+			{
+				"event": "San Diego CTF 2025",
+				"place": 74,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2785/",
+				"points": 225,
+				"rating": 1.555
+			},
+			{
+				"event": "Break the Syntax CTF 2025",
+				"place": 162,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2749/",
+				"points": 350,
+				"rating": 2.05
+			},
+			{
+				"event": "DevSecOps CTF 2025",
+				"place": 54,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2682/",
+				"points": 187,
+				"rating": 10.757
+			},
+			{
+				"event": "Incognito 6.0",
+				"place": 125,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2761/",
+				"points": 150,
+				"rating": 4.213
+			},
+			{
+				"event": "UMDCTF 2025",
+				"place": 521,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2563/",
+				"points": 161,
+				"rating": 0.821
+			},
+			{
+				"event": "CTF@CIT 2025",
+				"place": 264,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2759/",
+				"points": 7288,
+				"rating": 4.948
+			},
+			{
+				"event": "b01lers CTF 2025",
+				"place": 322,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2652/",
+				"points": 107,
+				"rating": 0.432
+			},
+			{
+				"event": "UMassCTF 2025",
+				"place": 157,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2653/",
+				"points": 476,
+				"rating": 2.16
+			},
+			{
+				"event": "DawgCTF 2025",
+				"place": 103,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2651/",
+				"points": 6225,
+				"rating": 28.882
+			},
+			{
+				"event": "Midnight Flag CTF - INSURRECTION",
+				"place": 254,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2687/",
+				"points": 100,
+				"rating": 0.298
+			},
+			{
+				"event": "THCon 2K25 CTF",
+				"place": 115,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2660/",
+				"points": 300,
+				"rating": 0.984
+			},
+			{
+				"event": "Texas Security Awareness Week 2025",
+				"place": 203,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2736/",
+				"points": 511,
+				"rating": 1.959
+			},
+			{
+				"event": "1753CTF 2025",
+				"place": 119,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2639/",
+				"points": 700,
+				"rating": 7.026
+			},
+			{
+				"event": "squ1rrel CTF 2025",
+				"place": 210,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2708/",
+				"points": 825,
+				"rating": 1.858
+			},
+			{
+				"event": "PlaidCTF 2025",
+				"place": 607,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2508/",
+				"points": 1,
+				"rating": 0.188
+			},
+			{
+				"event": "TAMUctf 2025",
+				"place": 320,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2681/",
+				"points": 10,
+				"rating": 0.24
+			},
+			{
+				"event": "SwampCTF 2025",
+				"place": 530,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2573/",
+				"points": 120,
+				"rating": 0.992
+			},
+			{
+				"event": "DiceCTF 2025 Quals",
+				"place": 295,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2617/",
+				"points": 212,
+				"rating": 3.625
+			},
+			{
+				"event": "WolvCTF 2025",
+				"place": 190,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2579/",
+				"points": 751,
+				"rating": 2.649
+			},
+			{
+				"event": "Cyber Apocalypse CTF 2025: Tales from Eldoria",
+				"place": 2810,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2674/",
+				"points": 3175,
+				"rating": 1.345
+			},
+			{
+				"event": "UTCTF 2025",
+				"place": 495,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2641/",
+				"points": 442,
+				"rating": 2.139
+			},
+			{
+				"event": "TPCTF 2025",
+				"place": 186,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2645/",
+				"points": 59,
+				"rating": 0.273
+			},
+			{
+				"event": "KalmarCTF 2025",
+				"place": 208,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2599/",
+				"points": 209,
+				"rating": 0.972
+			},
+			{
+				"event": "Pearl CTF",
+				"place": 151,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2647/",
+				"points": 650,
+				"rating": 2.666
+			},
+			{
+				"event": "Winja CTF | Nullcon Goa 2025",
+				"place": 32,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2692/",
+				"points": 520,
+				"rating": 3.223
+			},
+			{
+				"event": "PwnMe CTF Quals 2025",
+				"place": 260,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2658/",
+				"points": 200,
+				"rating": 0.609
+			},
+			{
+				"event": "ApoorvCTF 2025",
+				"place": 358,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2638/",
+				"points": 200,
+				"rating": 0.501
+			},
+			{
+				"event": "ACECTF 1.0",
+				"place": 92,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2619/",
+				"points": 3600,
+				"rating": 9.504
+			},
+			{
+				"event": "TRX CTF 2025",
+				"place": 140,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2654/",
+				"points": 150,
+				"rating": 0.649
+			},
+			{
+				"event": "Kashi CTF 2025",
+				"place": 386,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2668/",
+				"points": 300,
+				"rating": 0.62
+			},
+			{
+				"event": "BroncoCTF 2025",
+				"place": 162,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2657/",
+				"points": 1472,
+				"rating": 3.047
+			},
+			{
+				"event": "EHAX CTF 2025",
+				"place": 252,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2677/",
+				"points": 150,
+				"rating": 0.435
+			},
+			{
+				"event": "LA CTF 2025",
+				"place": 285,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2592/",
+				"points": 2031,
+				"rating": 4.441
+			},
+			{
+				"event": "BITSCTF 2025",
+				"place": 394,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2607/",
+				"points": 100,
+				"rating": 0.278
+			},
+			{
+				"event": "Nullcon Goa HackIM 2025 CTF",
+				"place": 422,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2642/",
+				"points": 151,
+				"rating": 1.237
+			},
+			{
+				"event": "ECTF",
+				"place": 126,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2663/",
+				"points": 1600,
+				"rating": 0
+			},
+			{
+				"event": "ATC Winter Vibes Community CTF",
+				"place": 87,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2665/",
+				"points": 400,
+				"rating": 0
+			},
+			{
+				"event": "Codefest CTF 2025",
+				"place": 133,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2648/",
+				"points": 1200,
+				"rating": 5.63
+			},
+			{
+				"event": "TUCTF 2024",
+				"place": 120,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2584/",
+				"points": 550,
+				"rating": 3.096
+			},
+			{
+				"event": "x3CTF 2025 (feat. mvm)",
+				"place": 485,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2467/",
+				"points": 50,
+				"rating": 0.236
+			},
+			{
+				"event": "KnightCTF 2025",
+				"place": 129,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2610/",
+				"points": 1785,
+				"rating": 5.896
+			},
+			{
+				"event": "Srdnlen CTF 2025 Quals",
+				"place": 179,
+				"year": 2025,
+				"url": "https://ctftime.org/event/2576/",
+				"points": 120,
+				"rating": 0.987
+			}
+		]
+	}
+}
