@@ -1,17 +1,19 @@
 ---
 /**
- * Playable pixel pong behind the hero: the game runs itself (AI opponent on
- * the right) and the reader can jump in — mouse or touch moves the left
- * paddle, and W/S or the arrow keys work while the hero is hovered.
+ * Playable pixel pong — an easter egg, not the default background.
+ *
+ * Hidden until the Konami code (↑↑↓↓←→←→ B A) unlocks it: <html> gets
+ * `data-pong="on"`, the canvas appears over the bubbles, and the bubbles
+ * stand down while it runs. The code again locks it away.
+ *
+ * Gameplay: AI opponent on the right; the reader's paddle follows the mouse
+ * or touch anywhere on the hero, and W/S or the arrow keys work while the
+ * hero is hovered (the hover gate keeps arrows scrolling the page elsewhere).
  *
  * No dependencies: one <canvas> at ~4 CSS px per game pixel, scaled up with
- * `image-rendering: pixelated`. Colours are read from the theme tokens and
- * re-read whenever `data-theme` changes, so the game re-tints with the
- * switcher like every other piece of art.
- *
- * The loop stops whenever the hero is off-screen or the tab is hidden — the
- * game must never burn battery while invisible. Under reduced motion the
- * loop never starts; one static frame is drawn instead.
+ * `image-rendering: pixelated`. Colours are theme tokens, re-read whenever
+ * `data-theme` changes. The loop stops when the hero is off-screen, the tab
+ * hidden, or the game locked; reduced motion never starts it.
  *
  * Pointer events are tracked on the hero section, not the canvas: the canvas
  * is `pointer-events: none` so it can never block text, links or scrolling.
@@ -38,6 +40,50 @@
 	const host = document.getElementById("top");
 
 	if (canvas && host) {
+		/*
+			Konami code. The code is checked on every keydown, with no
+			preventDefault — the arrows will scroll the page while you enter
+			it, exactly like the arcades did not care either. An editable
+			target never counts, so typing "ba" in a form cannot unlock it.
+		*/
+		const KONAMI = [
+			"arrowup",
+			"arrowup",
+			"arrowdown",
+			"arrowdown",
+			"arrowleft",
+			"arrowright",
+			"arrowleft",
+			"arrowright",
+			"b",
+			"a",
+		];
+		let progress = 0;
+		window.addEventListener("keydown", (event) => {
+			const target = event.target as HTMLElement | null;
+			if (target && (EDITABLE.includes(target.tagName) || target.isContentEditable)) return;
+			progress = event.key.toLowerCase() === KONAMI[progress] ? progress + 1 : 0;
+			if (progress === KONAMI.length) {
+				progress = 0;
+				toggle();
+			}
+		});
+
+		/** Flip the easter egg on or off, with a small toast. */
+		const toggle = () => {
+			const root = document.documentElement;
+			const on = root.dataset.pong !== "on";
+			root.dataset.pong = on ? "on" : "off";
+
+			const toast = document.createElement("div");
+			toast.className = "pong-toast";
+			toast.textContent = on ? "PONG — mouse to move · code again to exit" : "PONG — see you";
+			document.body.append(toast);
+			setTimeout(() => toast.remove(), 2600);
+
+			if (on) play();
+			else stop();
+		};
 		const ctx = canvas.getContext("2d");
 
 		/*
@@ -256,6 +302,7 @@
 		let running = false;
 		let raf = 0;
 		let last = 0;
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 		const loop = (now: number) => {
 			if (!running) return;
@@ -268,7 +315,9 @@
 		};
 
 		const play = () => {
-			if (running || !state.visible || document.hidden) return;
+			// Locked until the Konami code; also stand down off-screen/hidden.
+			if (running || reduced || document.hidden || document.documentElement.dataset.pong !== "on")
+				return;
 			running = true;
 			last = performance.now();
 			raf = requestAnimationFrame(loop);
@@ -298,27 +347,42 @@
 
 		resize();
 		serve(Math.random() < 0.5 ? -1 : 1);
-
-		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-			// Static frame: the game exists, it just does not move.
-			state.ball.x = gw / 2 - BALL / 2 + 20;
-			state.ball.y = gh / 2 - BALL / 2;
-			render();
-		} else {
-			play();
-		}
+		// Draw one frame so the moment the code unlocks the game it is complete.
+		render();
 	}
 </script>
 
 <style>
 	.pong {
+		/* The easter egg stays off until the code puts data-pong on <html>. */
+		display: none;
 		position: absolute;
 		inset: 0;
 		width: 100%;
 		height: 100%;
-		z-index: 0;
+		z-index: 1;
 		pointer-events: none;
 		/* The whole point: upscale the low-res canvas in hard blocks. */
 		image-rendering: pixelated;
+	}
+
+	:global(html[data-pong="on"]) .pong {
+		display: block;
+	}
+
+	:global(.pong-toast) {
+		position: fixed;
+		bottom: 1.2rem;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 80;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--brand);
+		background: var(--surface);
+		box-shadow: var(--elevation-hover);
+		padding: 0.5rem 0.9rem;
 	}
 </style>

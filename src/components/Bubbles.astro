@@ -1,0 +1,240 @@
+---
+/**
+ * Ambient pixel bubbles rising through the hero background — Steam-Deck
+ * boot-animation energy, drawn as hollow pixel circles (precomputed ring
+ * masks, no antialiasing) that wobble upward and pop into a sparkle at the
+ * surface. A few bubbles wear the brand colour; the rest stay hairline-mute.
+ *
+ * Colours are re-read on palette switch, the loop stops when the hero is
+ * off-screen or the tab hidden, and reduced motion gets one static frame —
+ * the same lifecycle contract as the pong easter egg it shares the hero with.
+ *
+ * No dependencies: one low-res canvas at ~4 CSS px per game pixel, upscaled
+ * with `image-rendering: pixelated`.
+ */
+---
+
+<canvas class="bubbles" aria-hidden="true"></canvas>
+
+<script>
+	/** Pixel-circle ring masks, one per bubble diameter. */
+	const ring = (d: number): [number, number][] => {
+		const c = (d - 1) / 2;
+		const cells: [number, number][] = [];
+		for (let y = 0; y < d; y++) {
+			for (let x = 0; x < d; x++) {
+				const dist = Math.hypot(x - c, y - c);
+				if (dist >= c - 0.75 && dist <= c + 0.5) cells.push([x, y]);
+			}
+		}
+		return cells;
+	};
+
+	const SIZES = [2, 3, 4, 5, 6];
+	const MASKS = new Map(SIZES.map((d) => [d, ring(d)]));
+
+	const SCALE = 4; // CSS px per game pixel
+	const MAX_BUBBLES = 40;
+
+	const canvas = document.querySelector<HTMLCanvasElement>(".bubbles");
+	const host = document.getElementById("top");
+
+	if (canvas && host) {
+		const ctx = canvas.getContext("2d");
+
+		/* Theme tokens, re-read on every palette switch. */
+		const readColors = () => {
+			const s = getComputedStyle(document.documentElement);
+			return {
+				strong: s.getPropertyValue("--border-strong").trim() || "#414868",
+				muted: s.getPropertyValue("--text-muted").trim() || "#8b93b8",
+				brand: s.getPropertyValue("--brand").trim() || "#9ece6a",
+			};
+		};
+
+		let colors = readColors();
+
+		interface Bubble {
+			x: number; // base column
+			y: number;
+			d: number; // diameter
+			vy: number; // game px/s, negative = up
+			amp: number; // wobble amplitude
+			freq: number;
+			phase: number;
+			brand: boolean;
+		}
+
+		let gw = 0;
+		let gh = 0;
+		const bubbles: Bubble[] = [];
+		/** Short-lived pop sparkles at the surface. */
+		const pops: { x: number; y: number; t: number }[] = [];
+
+		const spawn = (atBottom = true) => {
+			const d = SIZES[Math.floor(Math.random() * SIZES.length)]!;
+			bubbles.push({
+				x: Math.random() * (gw - d),
+				y: atBottom ? gh + d : Math.random() * gh,
+				d,
+				// Bigger bubbles rise slower, like real ones.
+				vy: -(14 - d) - Math.random() * 4,
+				amp: 0.5 + Math.random() * 2.5,
+				freq: 0.4 + Math.random() * 0.8,
+				phase: Math.random() * Math.PI * 2,
+				brand: Math.random() < 0.2,
+			});
+		};
+
+		const resize = () => {
+			const rect = host.getBoundingClientRect();
+			gw = Math.max(80, Math.round(rect.width / SCALE));
+			gh = Math.max(60, Math.round(rect.height / SCALE));
+			canvas.width = gw;
+			canvas.height = gh;
+		};
+
+		const target = () => Math.min(MAX_BUBBLES, Math.round((gw * gh) / 3000));
+
+		const step = (dt: number, now: number) => {
+			// Top up gradually, one at a time, so the field assembles calmly.
+			if (bubbles.length < target() && Math.random() < dt * 3) spawn();
+
+			for (const bubble of bubbles) {
+				bubble.y += bubble.vy * dt;
+			}
+
+			// Bubbles that reach the surface pop into a sparkle and free a slot.
+			for (const [i] of [...bubbles.entries()].reverse()) {
+				const bubble = bubbles[i]!;
+				if (bubble.y < -bubble.d) {
+					pops.push({ x: bubble.x + bubble.d / 2, y: 1, t: 0 });
+					bubbles.splice(i, 1);
+				}
+			}
+
+			for (const [i] of [...pops.entries()].reverse()) {
+				pops[i]!.t += dt;
+				if (pops[i]!.t > 0.18) pops.splice(i, 1);
+			}
+			void now;
+		};
+
+		const render = (now: number) => {
+			ctx!.clearRect(0, 0, gw, gh);
+
+			for (const bubble of bubbles) {
+				const wobble = Math.sin(now * bubble.freq + bubble.phase) * bubble.amp;
+				const x = Math.round(bubble.x + wobble);
+				const y = Math.round(bubble.y);
+				ctx!.globalAlpha = bubble.brand ? 0.9 : 0.55;
+				ctx!.fillStyle = bubble.brand ? colors.brand : colors.strong;
+				for (const [cx, cy] of MASKS.get(bubble.d)!) {
+					ctx!.fillRect(x + cx, y + cy, 1, 1);
+				}
+				// One shine pixel inside the top-left of bigger bubbles.
+				if (bubble.d >= 4) {
+					ctx!.globalAlpha = 0.9;
+					ctx!.fillStyle = colors.brand;
+					ctx!.fillRect(x + 1, y + 1, 1, 1);
+				}
+			}
+
+			// Pop sparkles: a 5-pixel star for a fifth of a second.
+			ctx!.globalAlpha = 0.9;
+			ctx!.fillStyle = colors.muted;
+			for (const pop of pops) {
+				for (const [dx, dy] of [
+					[0, 0],
+					[2, 0],
+					[-2, 0],
+					[0, 2],
+					[0, -2],
+				] as [number, number][]) {
+					ctx!.fillRect(Math.round(pop.x + dx), Math.round(pop.y + dy), 1, 1);
+				}
+			}
+			ctx!.globalAlpha = 1;
+		};
+
+		/* ------------------------------ lifecycle ------------------------------ */
+
+		let running = false;
+		let raf = 0;
+		let last = 0;
+		let reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+		const loop = (now: number) => {
+			if (!running) return;
+			const t = now / 1000;
+			const dt = Math.min(0.04, (now - last) / 1000);
+			last = now;
+			step(dt, t);
+			render(t * 1000);
+			raf = requestAnimationFrame(loop);
+		};
+
+		const play = () => {
+			if (running || reduced || document.hidden || document.documentElement.dataset.pong === "on")
+				return;
+			running = true;
+			last = performance.now();
+			raf = requestAnimationFrame(loop);
+		};
+
+		const stop = () => {
+			running = false;
+			cancelAnimationFrame(raf);
+		};
+
+		new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) play();
+				else stop();
+			},
+			{ threshold: 0.05 },
+		).observe(host);
+
+		document.addEventListener("visibilitychange", () => (document.hidden ? stop() : play()));
+		window.addEventListener("resize", () => {
+			resize();
+			if (!running) render(0);
+		});
+
+		/*
+			The pong easter egg takes over this canvas's spotlight: while it is
+			unlocked (`data-pong` on <html>), the bubbles stand down.
+		*/
+		new MutationObserver(() => {
+			colors = readColors();
+			if (document.documentElement.dataset.pong === "on") stop();
+			else play();
+			if (!running) render(0);
+		}).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["data-theme", "data-pong"],
+		});
+
+		resize();
+
+		if (reduced) {
+			// Static frame: a calm field of bubbles, none of them moving.
+			for (let i = 0; i < target(); i++) spawn(false);
+			render(0);
+		} else {
+			play();
+		}
+	}
+</script>
+
+<style>
+	.bubbles {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
+		image-rendering: pixelated;
+	}
+</style>

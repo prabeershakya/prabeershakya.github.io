@@ -2,10 +2,12 @@
 import { profile } from "../../data/profile";
 import TerminalArt from "../TerminalArt.astro";
 import MarkDraw from "../MarkDraw.astro";
+import Bubbles from "../Bubbles.astro";
 import PongGame from "../PongGame.astro";
 ---
 
 <section id="top" class="hero">
+	<Bubbles />
 	<PongGame />
 	<div class="container hero-inner">
 		<div class="hero-left">
@@ -72,9 +74,9 @@ import PongGame from "../PongGame.astro";
 	}
 
 	.hero-inner {
-		/* The pong canvas is z-index 0; every piece of content sits above it. */
+		/* Bubbles sit at z 0, the pong easter egg at z 1 — content above both. */
 		position: relative;
-		z-index: 1;
+		z-index: 2;
 		display: flex;
 		align-items: center;
 		gap: clamp(2rem, 5vw, 4rem);

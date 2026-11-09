@@ -24,6 +24,10 @@ const year = new Date().getFullYear();
 				<Icon name="linkedin" size={13} /> linkedin
 			</a>
 		</p>
+		<p class="foot-hint mono" title="something old, something new">
+			<span aria-hidden="true">↑ ↑ ↓ ↓ ← → ← → B A</span>
+			<span class="sr-only">Konami code hint: up up down down left right left right B A</span>
+		</p>
 	</div>
 </footer>
 
@@ -99,5 +103,15 @@ const year = new Date().getFullYear();
 
 	.foot-links a:hover {
 		color: var(--brand);
+	}
+
+	/* The easter egg's only hint. Muted, ignorable, there. */
+	.foot-hint {
+		width: 100%;
+		font-size: 0.62rem;
+		letter-spacing: 0.18em;
+		color: var(--text-muted);
+		opacity: 0.6;
+		margin: 0;
 	}
 </style>

@@ -42,7 +42,8 @@ src/
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
 │   ├── Marquee.astro    skills ticker under the hero
-│   ├── PongGame.astro   playable pixel pong behind the hero (canvas, no deps)
+│   ├── Bubbles.astro    ambient pixel bubbles rising in the hero background
+│   ├── PongGame.astro   playable pixel pong easter egg — unlocked by the Konami code
 │   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
 │   ├── Icon.astro       inline brand icons (mail, github, linkedin, htb, thm)
@@ -97,16 +98,23 @@ link, never set on the icon.
 mark-draw stroke, the ticker, reveal. Nothing may park content at opacity 0
 when motion is reduced or JS is off.
 
-**The background pong** (`PongGame.astro`) plays behind the hero content. It
-is a plain canvas at ~4 CSS px per game pixel, upscaled with
+**The background bubbles** (`Bubbles.astro`) are the hero's default ambient
+layer: hollow pixel-circle bubbles (precomputed ring masks) rising with a sine
+wobble, popping into a sparkle at the surface. ~20% wear the brand colour.
+
+**The background pong** (`PongGame.astro`) is an easter egg, locked until the
+Konami code (↑↑↓↓←→←→ B A) sets `data-pong="on"` on `<html>` — then it plays
+over the bubbles (which stand down via the same attribute) until the code is
+entered again. Plain canvas at ~4 CSS px per game pixel, upscaled with
 `image-rendering: pixelated`; no physics or rendering libraries. Colours are
 re-read from the theme tokens whenever `data-theme` changes. Gameplay: AI
 paddle right, reader's paddle left — mouse/touch anywhere on the hero, or
 W/S/arrow keys while the hero is hovered (the hover gate is what keeps arrow
 keys scrolling the page elsewhere). The loop stops via IntersectionObserver +
 `visibilitychange` when the hero is off-screen or the tab hidden, and never
-starts under reduced motion (one static frame instead). The canvas is
-`pointer-events: none`; pointer tracking lives on the hero section.
+starts under reduced motion. The Konami detector never calls preventDefault
+and ignores editable targets. The canvas is `pointer-events: none`; pointer
+tracking lives on the hero section.
 
 **Hairlines, not shadows.** Depth is `var(--elevation)` (a 1px outline); hover
 steps to `--elevation-hover` plus a 2px lift. No offset shadows, no blur
