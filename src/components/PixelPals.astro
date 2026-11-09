@@ -1,0 +1,195 @@
+---
+/**
+ * Pixel pals: little creatures that pop up in the hero at random intervals —
+ * a Magikarp here, a Psyduck there, a Starmie, the odd Pokéball. Pure
+ * ambience: they surface somewhere in the background layer (z 0, behind the
+ * frosted hero panel, so they peek around it and blur softly behind its
+ * glass), hold for a few seconds, and are gone.
+ *
+ * The sprites are drawn once at build time into <template> elements via
+ * PixelArt; the client script only clones a template, positions it, and
+ * removes it. Identity colours are literal hex on purpose — Psyduck must stay
+ * yellow in every palette, so these do not ride the --t-* tokens.
+ *
+ * Spawns are skipped under reduced motion, while the tab is hidden, and while
+ * the pong easter egg owns the background.
+ */
+import PixelArt from "./PixelArt.astro";
+
+interface Pal {
+	name: string;
+	palette: Record<string, string>;
+	map: string[];
+}
+
+const PALS: Pal[] = [
+	{
+		name: "psyduck",
+		palette: { y: "#ffd93d", w: "#f8f4e3", k: "#26221d" },
+		map: [
+			"..k...k...k...",
+			"..k...k...k...",
+			"..yyyyyyyyyy..",
+			".yyyyyyyyyyyy.",
+			"yyyyyyyyyyyyyy",
+			"yyykkyyyykkyyy",
+			"yyyyyyyyyyyyyy",
+			".ywwwwwwwwwwy.",
+			".ywwwwwwwwwwy.",
+			"..ywwwwwwwwy..",
+			"...yyyyyyyy...",
+			"....yyyyyy....",
+		],
+	},
+	{
+		name: "starmie",
+		palette: { p: "#9d6ff0", r: "#ff5f5f" },
+		map: [
+			"......p......",
+			".....ppp.....",
+			".....ppp.....",
+			"ppppppppppppp",
+			".ppppppppppp.",
+			"..ppprrrppp..",
+			"...pprrrpp...",
+			"...ppppppp...",
+			"..ppp...ppp..",
+			".pp.......pp.",
+			"pp.........pp",
+		],
+	},
+	{
+		name: "pokeball",
+		palette: { k: "#26221d", r: "#ff5252", w: "#f8f4e3" },
+		map: [
+			"..kkkkk..",
+			".krrrrrk.",
+			"krrrrrrrk",
+			"krrrrrrrk",
+			"kkkkkkkkk",
+			"kkkwwwkkk",
+			"kwwwwwwwk",
+			".kwwwwwk.",
+			"..kkkkk..",
+		],
+	},
+	{
+		name: "magikarp",
+		palette: { o: "#f2762e", w: "#f8f4e3", k: "#26221d" },
+		map: [
+			"...ooooo.....",
+			"..ooooooo.o..",
+			".oooooooo.o..",
+			".koooooo.oo..",
+			"oooooooooo.o.",
+			".oooooooo.oo.",
+			"..oooooo..o..",
+			"...oooo......",
+		],
+	},
+];
+---
+
+<div class="pals" aria-hidden="true">
+	{PALS.map((pal) => (
+		<template data-pal={pal.name}>
+			<PixelArt map={pal.map} palette={pal.palette} />
+		</template>
+	))}
+</div>
+
+<script>
+	const host = document.getElementById("top");
+	const layer = document.querySelector<HTMLElement>(".pals");
+
+	if (host && layer) {
+		const templates = [...layer.querySelectorAll("template")];
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		let visible = true;
+
+		new IntersectionObserver(([entry]) => (visible = entry.isIntersecting), {
+			threshold: 0.05,
+		}).observe(host);
+
+		const spawn = () => {
+			const tpl = templates[Math.floor(Math.random() * templates.length)]!;
+			const sprite = tpl.content.firstElementChild?.cloneNode(true);
+			if (!sprite) return;
+
+			const pal = document.createElement("span");
+			pal.className = "pal";
+			pal.style.left = `${3 + Math.random() * 88}%`;
+			pal.style.top = `${6 + Math.random() * 74}%`;
+			pal.append(sprite);
+			layer.append(pal);
+
+			// Hold a few seconds, then step back out and free the DOM.
+			const hold = 2600 + Math.random() * 2600;
+			setTimeout(() => {
+				pal.classList.add("bye");
+				setTimeout(() => pal.remove(), 240);
+			}, hold);
+		};
+
+		const schedule = () => {
+			window.setTimeout(
+				() => {
+					// The pong easter egg gets the spotlight when it is on.
+					if (visible && !document.hidden && document.documentElement.dataset.pong !== "on")
+						spawn();
+					schedule();
+				},
+				9000 + Math.random() * 9000,
+			);
+		};
+
+		if (!reduced && templates.length) schedule();
+	}
+</script>
+
+<style>
+	.pals {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.pal {
+		position: absolute;
+		animation: pal-pop 260ms steps(2, end) both;
+	}
+
+	.pal.bye {
+		animation: pal-drop 220ms steps(2, end) both;
+	}
+
+	.pal :global(svg) {
+		width: clamp(48px, 6vw, 72px);
+		height: auto;
+	}
+
+	/* Steps, not easing: retro sprites appear in frames, not tweens. */
+	@keyframes pal-pop {
+		from {
+			opacity: 0;
+			transform: translateY(8px) scale(0.6);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes pal-drop {
+		from {
+			opacity: 1;
+			transform: none;
+		}
+		to {
+			opacity: 0;
+			transform: translateY(8px) scale(0.6);
+		}
+	}
+</style>

@@ -4,62 +4,66 @@ import TerminalArt from "../TerminalArt.astro";
 import MarkDraw from "../MarkDraw.astro";
 import Bubbles from "../Bubbles.astro";
 import PongGame from "../PongGame.astro";
+import PixelPals from "../PixelPals.astro";
 ---
 
 <section id="top" class="hero">
 	<Bubbles />
 	<PongGame />
+	<PixelPals />
 	<div class="container hero-inner">
-		<div class="hero-left">
-			<p class="sec-label reveal">portfolio // cyber security learner</p>
+		<div class="hero-panel">
+			<div class="hero-left">
+				<p class="sec-label reveal">portfolio // cyber security learner</p>
 
-			<h1 class="hero-name reveal">
-				PRABEER MAN
-				<br />
-				<span class="hl">SHAKYA</span>
-				<span class="cursor" aria-hidden="true">
-					_
-				</span>
-			</h1>
+				<h1 class="hero-name reveal">
+					PRABEER MAN
+					<br />
+					<span class="hl">SHAKYA</span>
+					<span class="cursor" aria-hidden="true">
+						_
+					</span>
+				</h1>
 
-			<p class="hero-tag reveal">
-				<span class="strike">hacks</span>
-				<MarkDraw>ethically</MarkDraw>
-				<span class="hl" aria-hidden="true">
-					.
-				</span>
-			</p>
+				<p class="hero-tag reveal">
+					<span class="strike">hacks</span>
+					<MarkDraw>ethically</MarkDraw>
+					<span class="hl" aria-hidden="true">
+						.
+					</span>
+				</p>
 
-			<div class="chip-row reveal">
-				<span class="chip">
-					<span class="chip-dot"></span> open to internships
-				</span>
-				<span class="chip">
-					<span class="chip-dot"></span> currently: pentesting
-				</span>
-				<span class="chip">toolkit: nmap · burp · wireshark</span>
+				<div class="chip-row reveal">
+					<span class="chip">
+						<span class="chip-dot"></span> open to internships
+					</span>
+					<span class="chip">
+						<span class="chip-dot"></span> currently: pentesting
+					</span>
+					<span class="chip">toolkit: nmap · burp · wireshark</span>
+				</div>
+
+				<div class="hero-cta reveal">
+					<a class="btn btn-accent" href="#projects">
+						view work
+					</a>
+					<a class="btn" href={profile.linkedin} target="_blank" rel="noopener">
+						linkedin ↗
+					</a>
+				</div>
 			</div>
 
-			<div class="hero-cta reveal">
-				<a class="btn btn-accent" href="#projects">
-					view work
-				</a>
-				<a class="btn" href={profile.linkedin} target="_blank" rel="noopener">
-					linkedin ↗
-				</a>
+			<div class="hero-right reveal">
+				<div class="terminal">
+					<TerminalArt />
+				</div>
+				<p class="hero-quote">
+					<span class="mono status-line">
+						<span class="pulse" aria-hidden="true"></span> online / learning
+					</span>
+					learning the depth of the web, one strand at a time.
+				</p>
 			</div>
-		</div>
-
-		<div class="hero-right reveal">
-			<div class="terminal">
-				<TerminalArt />
-			</div>
-			<p class="hero-quote">
-				<span class="mono status-line">
-					<span class="pulse" aria-hidden="true"></span> online / learning
-				</span>
-				learning the depth of the web, one strand at a time.
-			</p>
 		</div>
 	</div>
 </section>
@@ -83,18 +87,21 @@ import PongGame from "../PongGame.astro";
 	}
 
 	/*
-		Frosted panels over the animation layer. The bubbles/pong canvas runs
-		behind the hero, so the two content columns get a translucent surface
-		(a near-opaque `color-mix`, so text stays readable even where
-		`backdrop-filter` is unsupported) with the house hairline elevation —
-		card language, but scoped to the text, not the whole section.
+		One frosted card behind everything: the name column and the terminal
+		share a single background so the animation layer (bubbles, pong, pals)
+		never sits directly behind bare text. A near-opaque `color-mix` keeps
+		text readable even where `backdrop-filter` is unsupported, and the
+		hairline elevation is the house card language.
 	*/
-	.hero-left,
-	.hero-right {
+	.hero-panel {
 		background: color-mix(in srgb, var(--surface) 90%, transparent);
 		backdrop-filter: blur(8px);
 		box-shadow: var(--elevation);
-		padding: clamp(1.4rem, 3vw, 2.2rem);
+		padding: clamp(1.4rem, 3vw, 2.4rem);
+		display: flex;
+		align-items: center;
+		gap: clamp(1.6rem, 4vw, 3.2rem);
+		width: 100%;
 	}
 
 	.hero-left {
@@ -211,8 +218,9 @@ import PongGame from "../PongGame.astro";
 	}
 
 	@media (max-width: 860px) {
-		.hero-inner {
+		.hero-panel {
 			flex-direction: column-reverse;
+			align-items: stretch;
 		}
 
 		.hero-left,

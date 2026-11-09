@@ -43,6 +43,7 @@ src/
 │   ├── Footer.astro
 │   ├── Marquee.astro    skills ticker under the hero
 │   ├── Bubbles.astro    ambient pixel bubbles rising in the hero background
+│   ├── PixelPals.astro  Pokémon sprites popping up in the hero at random intervals
 │   ├── PongGame.astro   playable pixel pong easter egg — unlocked by the Konami code
 │   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
@@ -104,11 +105,17 @@ wobble, popping into a sparkle at the surface. ~20% wear the brand colour.
 The wobble is `sin(t * freq)` with `t` in SECONDS — the one time milliseconds
 were passed here, the field vibrated at ~70 Hz like a shaken soda.
 
-**Hero readability over animation**: the hero's two content columns
-(`.hero-left`, `.hero-right`) sit on frosted panels — 90% `color-mix` of
-`--surface` plus `backdrop-filter: blur(8px)` — with the house hairline
-elevation. Any new hero decoration must keep those panels between it and the
-text.
+**Hero readability over animation**: the hero's two content columns share ONE
+frosted card (`.hero-panel` in `Hero.astro`) — 90% `color-mix` of `--surface`
+plus `backdrop-filter: blur(8px)` — with the house hairline elevation. Any new
+hero decoration must keep that panel between it and the text.
+
+**Pixel pals** (`PixelPals.astro`): sprites render at build time into
+`<template>` elements; the client script clones one every 9–18 s, drops it at
+a random spot on the hero's z-0 layer, and removes it after a few seconds.
+Their identity colours are literal hex, NOT `--t-*` tokens — Psyduck stays
+yellow in every palette (the one sanctioned exception to the token rule).
+Spawns pause off-screen, hidden tabs, reduced motion, and while pong is on.
 
 **The background pong** (`PongGame.astro`) is an easter egg, locked until the
 Konami code (↑↑↓↓←→←→ B A) sets `data-pong="on"` on `<html>` — then it plays
