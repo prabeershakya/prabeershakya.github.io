@@ -42,11 +42,11 @@ src/
 │   ├── Nav.astro        sticky status bar + theme picker + mobile menu
 │   ├── Footer.astro
 │   ├── Bubbles.astro    ambient pixel bubbles rising in the hero background
-│   ├── PixelBits.astro  random binary strings floating up through the hero
+│   ├── PixelBits.astro  single 1s and 0s floating up through the hero
 │   ├── PongGame.astro   playable pixel pong easter egg — unlocked by the Konami code
-│   ├── TerminalArt.astro  animated hero terminal: types commands, prints, loops
+│   ├── TerminalArt.astro  hero terminal as a live status monitor (boot + cycling status)
 │   ├── MarkDraw.astro   omarchy's marker stroke that draws itself under a word
-│   ├── Icon.astro       inline brand icons (mail, github, linkedin, htb, thm)
+│   ├── Icon.astro       inline brand + UI icons, all in currentColor
 │   └── PixelArt.astro   pixel-art renderer: string map + palette → crisp SVG
 ├── lib/
 │   └── pixel-font.ts    3x5 pixel font shared by SSR frames and client scripts
@@ -81,21 +81,29 @@ values may be `var(--…)` tokens so the art re-tints with the theme. `c` cells
 blink. User-supplied PNGs can replace scenes later — keep scenes in their own
 constants so the swap is one component.
 
-**The animated terminal** (`TerminalArt.astro`) draws text with the shared
-3x5 font in `src/lib/pixel-font.ts`. The frontmatter renders the static first
-frame (so no-JS and reduced-motion users see full art); the bundled script
-only takes over the typing cycle when motion is allowed. The sequence is
-declared in BOTH the frontmatter and the script — the frontmatter throws the
-build if a glyph is missing, so a bad character fails loudly, but keep the two
-`SEQUENCE` arrays identical. `COLS`/`ROWS`/`PAD` are duplicated the same way.
+**The hero terminal** (`TerminalArt.astro`) is a live status monitor: a bigger
+pixel window that boots a dashboard (`FOCUS / EVENTS / BEST / PROFILE / STATUS`)
+row by row, then keeps the STATUS value cycling. Text is drawn with the shared
+3x5 font in `src/lib/pixel-font.ts`. The frontmatter computes the dashboard
+from `teams.ts` (real event count + best finish) and hands it to the script
+via a `data-dashboard` attribute — one source of truth, because the script
+cannot import `teams.ts` (it pulls in `node:fs`). The frontmatter renders the
+static full-frame (so no-JS and reduced-motion users see the whole dashboard);
+the script only takes over the boot + cycle when motion is allowed, and it
+clears the SSR screen first or the two layers overlap. The frontmatter throws
+the build if any character has no glyph, so a bad edit fails loudly. Geometry
+(`COLS`/`ROWS`/`PAD`/`PITCH`/`LABEL_W`) is mirrored in the script.
 
-**Icons** render in `currentColor` via `Icon.astro` (`mail`, `github`,
-`linkedin`, `hackthebox`, `tryhackme`); hover colour comes from the parent
-link, never set on the icon.
+**Icons** render in `currentColor` via `Icon.astro`. Brand marks (github,
+linkedin, hackthebox, tryhackme) are fills; UI icons (mail, external,
+arrow-right, folder, file-text, award, shield, flag) are 2.2px strokes. Hover
+colour comes from the parent link, never set on the icon. Section titles can
+lead with `.title-icon` (a global primitive); inside running text keep icons
+in flex rows that set `align-items: center` and a small gap.
 
 **Motion**: every animation gates on `prefers-reduced-motion` — typing, the
-mark-draw stroke, the ticker, reveal. Nothing may park content at opacity 0
-when motion is reduced or JS is off.
+mark-draw stroke, the bubbles/bits, reveal. Nothing may park content at
+opacity 0 when motion is reduced or JS is off.
 
 **The background bubbles** (`Bubbles.astro`) are the hero's default ambient
 layer: hollow pixel-circle bubbles (precomputed ring masks) rising with a sine
@@ -108,13 +116,13 @@ frosted card (`.hero-panel` in `Hero.astro`) — 90% `color-mix` of `--surface`
 plus `backdrop-filter: blur(8px)` — with the house hairline elevation. Any new
 hero decoration must keep that panel between it and the text.
 
-**Pixel bits** (`PixelBits.astro`): random binary strings (3–6 digits) drawn
-with the shared 3x5 pixel font on the client and floated UP through the hero
-like the bubbles — spawn below the bottom edge, slow linear rise plus an
-alternate-sway inner span, `animationend` frees it. Colour is `currentColor`
-through `var(--text-muted)` / `var(--brand)` on the span, so palette switches
-re-tint it for free. Spawns pause off-screen, hidden tabs, reduced motion, and
-while pong is on.
+**Pixel bits** (`PixelBits.astro`): single 1s and 0s (one glyph, from the
+shared 3x5 pixel font) floated UP through the hero like the bubbles — spawn
+below the bottom edge every 5–11 s, slow linear rise plus an alternate-sway
+inner span, `animationend` frees it. Colour is `currentColor` through
+`var(--text-muted)` / `var(--brand)` on the span, so palette switches re-tint
+it for free. Spawns pause off-screen, hidden tabs, reduced motion, and while
+pong is on.
 
 **The background pong** (`PongGame.astro`) is an easter egg, locked until the
 Konami code (↑↑↓↓←→←→ B A) sets `data-pong="on"` on `<html>` — then it plays
