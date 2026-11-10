@@ -10,7 +10,7 @@ competitor. Static, single page, built with [Astro](https://astro.build).
 Design language: **omarchy.org** — dark terminal-elegant, Geist + JetBrains
 Mono, 0px radius, hairline `0 0 0 1px` elevation (never offset shadows), one
 brand accent, mono smallcaps labels, procedural pixel-art scenes rendered as
-SVG. A palette switcher (nav dropdown + `T` key) re-skins the whole site via
+SVG. A palette switcher (nav dropdown + a `T`-key search palette) re-skins the whole site via
 `--t-*` tokens.
 
 Content and data are shared with the sibling project `../Web` (the
