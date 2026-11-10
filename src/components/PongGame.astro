@@ -9,6 +9,8 @@
  * Gameplay: AI opponent on the right; the reader's paddle follows the mouse
  * or touch anywhere on the hero, and W/S or the arrow keys work while the
  * hero is hovered (the hover gate keeps arrows scrolling the page elsewhere).
+ * The pace ramps with every paddle hit and never resets, and the AI aims
+ * with a per-ball wobble — so rallies heat up and the AI is beatable.
  *
  * No dependencies: one <canvas> at ~4 CSS px per game pixel, scaled up with
  * `image-rendering: pixelated`. Colours are theme tokens, re-read whenever
@@ -31,10 +33,10 @@
 	const BALL = 3;
 	const NET_GAP = 4;
 
-	const START_SPEED = 55; // game px/s
-	const SPEEDUP = 1.045; // per paddle hit
-	const MAX_SPEED = 130;
-	const AI_SPEED = 50;
+	const START_SPEED = 55; // game px/s — opening pace
+	const SPEEDUP = 1.06; // per paddle hit — the rally heats up
+	const MAX_SPEED = 175;
+	const AI_SPEED = 47; // lazy enough to be outrun by a fast ball
 
 	const canvas = document.querySelector<HTMLCanvasElement>(".pong");
 	const host = document.getElementById("top");
@@ -113,6 +115,7 @@
 			ball: { x: 0, y: 0, vx: 0, vy: 0 },
 			player: 0, // paddle top, game px
 			ai: 0,
+			aiErr: 0, // the AI's aim wobble for the current incoming ball
 			scorePlayer: 0,
 			scoreAi: 0,
 			playerVel: 0, // from keys, game px/s
@@ -137,13 +140,29 @@
 
 		const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
+		/*
+			Live ball pace. Every paddle hit pushes it up and a point never
+			resets it — the longer the game runs, the faster everything gets.
+		*/
+		let pace = START_SPEED;
+
+		/*
+			The AI is beatable because it never aims dead-centre: each incoming
+			ball gets a fresh wobble of up to about a third of a paddle, so it
+			sometimes returns off the edge and sometimes whiffs entirely.
+		*/
+		const aiMisaim = () => {
+			state.aiErr = (Math.random() * 2 - 1) * PADDLE_H * 0.65;
+		};
+
 		/** Serve toward `dir` (-1 = toward the player, 1 = toward the AI). */
 		const serve = (dir: number) => {
 			state.ball.x = gw / 2 - BALL / 2;
 			state.ball.y = gh / 2 - BALL / 2;
-			state.ball.vx = dir * START_SPEED;
-			state.ball.vy = (Math.random() * 2 - 1) * START_SPEED * 0.6;
+			state.ball.vx = dir * pace * 0.85; // serves sit just under live pace
+			state.ball.vy = (Math.random() * 2 - 1) * pace * 0.5;
 			state.serving = true;
+			if (dir > 0) aiMisaim();
 		};
 
 		/* ------------------------------- input -------------------------------- */
@@ -192,9 +211,12 @@
 			if (state.keys.has("arrowdown") || state.keys.has("s")) keyVel += 90;
 			if (keyVel !== 0) state.player = clamp(state.player + keyVel * dt, 0, gh - PADDLE_H);
 
-			// AI: chase the ball when it is coming, drift home when it is not.
+			// AI: chase the ball (with its aim wobble) when it is coming,
+			// drift home when it is not.
 			const aiTarget =
-				state.ball.vx > 0 ? state.ball.y + BALL / 2 - PADDLE_H / 2 : gh / 2 - PADDLE_H / 2;
+				state.ball.vx > 0
+					? state.ball.y + BALL / 2 - PADDLE_H / 2 + state.aiErr
+					: gh / 2 - PADDLE_H / 2;
 			const aiDelta = clamp(aiTarget - state.ai, -AI_SPEED * dt, AI_SPEED * dt);
 			state.ai = clamp(state.ai + aiDelta, 0, gh - PADDLE_H);
 
@@ -224,9 +246,10 @@
 			if (ball.vx < 0 && ball.x <= PADDLE_W + 1 && ball.x >= PADDLE_W - BALL - 1) {
 				if (ball.y + BALL >= state.player && ball.y <= state.player + PADDLE_H) {
 					ball.x = PADDLE_W + 1;
-					const speed = Math.min(MAX_SPEED, Math.abs(ball.vx) * SPEEDUP);
-					ball.vx = speed;
+					pace = Math.min(MAX_SPEED, pace * SPEEDUP);
+					ball.vx = pace;
 					ball.vy = clamp((ball.y - state.player + BALL / 2 - PADDLE_H / 2) * 4.2, -80, 80);
+					aiMisaim();
 				}
 			}
 
@@ -234,8 +257,8 @@
 			if (ball.vx > 0 && ball.x + BALL >= gw - PADDLE_W - 1 && ball.x <= gw - PADDLE_W + BALL) {
 				if (ball.y + BALL >= state.ai && ball.y <= state.ai + PADDLE_H) {
 					ball.x = gw - PADDLE_W - 1 - BALL;
-					const speed = Math.min(MAX_SPEED, Math.abs(ball.vx) * SPEEDUP);
-					ball.vx = -speed;
+					pace = Math.min(MAX_SPEED, pace * SPEEDUP);
+					ball.vx = -pace;
 					ball.vy = clamp((ball.y - state.ai + BALL / 2 - PADDLE_H / 2) * 4.2, -80, 80);
 				}
 			}
