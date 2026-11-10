@@ -206,8 +206,17 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 		const NS = "http://www.w3.org/2000/svg";
 		const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-		/** Draws one line of pixel text into a group. */
-		const draw = (text: string, row: number, fill: string, parent: SVGElement) => {
+		/**
+		 * Draws one line of pixel text into a group. `col` is the start column —
+		 * values must offset past the label column or they print on top of it.
+		 */
+		const draw = (
+			text: string,
+			row: number,
+			fill: string,
+			parent: SVGElement,
+			col: number = PAD,
+		) => {
 			for (const [i, ch] of [...text.toUpperCase()].entries()) {
 				const glyph = GLYPHS[ch];
 				if (!glyph) continue;
@@ -215,7 +224,7 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 					for (const bit of [2, 1, 0]) {
 						if ((bits >> bit) & 1) {
 							const rect = document.createElementNS(NS, "rect");
-							rect.setAttribute("x", String(PAD + i * ADVANCE + (2 - bit)));
+							rect.setAttribute("x", String(col + i * ADVANCE + (2 - bit)));
 							rect.setAttribute("y", String(row + gy));
 							rect.setAttribute("width", "1.02");
 							rect.setAttribute("height", "1.02");
@@ -255,11 +264,20 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 				const valueG = document.createElementNS(NS, "g");
 				valueG.setAttribute("class", "value");
 				g.appendChild(valueG);
-				draw(value.slice(0, n + 1), top, "var(--text-secondary)", valueG);
+				draw(value.slice(0, n + 1), top, "var(--text-secondary)", valueG, start);
 				parkCursor(start + textWidth(value.slice(0, n + 1)) + 1, top);
 				await sleep(TYPE_MS);
 			}
 		};
+
+		/*
+			Generation token: dev HMR can re-run this module while an older
+			execution's loops are still alive — two loops typing into one screen
+			reads as overlapping text. Each run invalidates the previous one.
+		*/
+		const genState = window as typeof window & { __terminalGen?: number };
+		const gen = (genState.__terminalGen = (genState.__terminalGen ?? 0) + 1);
+		const stale = () => genState.__terminalGen !== gen;
 
 		const run = async () => {
 			// The static SSR frame shows the full dashboard for no-JS/reduced-motion.
@@ -270,6 +288,7 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 
 			// Boot: reveal the dashboard row by row.
 			for (const [i, [label, value]] of dashboard.rows.entries()) {
+				if (stale()) return;
 				await typeRow(i, label, value);
 				await sleep(ROW_GAP_MS);
 			}
@@ -277,7 +296,9 @@ const cursorRow = TEXT_TOP + (DASH.length - 1) * PITCH;
 			// Live: the STATUS value keeps cycling, everything else stays put.
 			const statusRow = dashboard.rows.length - 1;
 			for (let s = 1; ; s = (s + 1) % dashboard.statuses.length) {
+				if (stale()) return;
 				await sleep(CYCLE_MS);
+				if (stale()) return;
 				await typeRow(statusRow, dashboard.rows[statusRow]![0], dashboard.statuses[s]!);
 			}
 		};
