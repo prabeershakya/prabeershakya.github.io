@@ -229,8 +229,13 @@ const links = [
 			btn.className = `palette-item${i === sel ? " is-sel" : ""}`;
 			btn.innerHTML =
 				`<span class="swatch" style="background:${theme.chrome}"></span>` +
+				`<span class="palette-text">` +
 				`<span class="palette-name">${theme.label}</span>` +
-				(theme.id === current ? `<span class="palette-now">now</span>` : "");
+				`<span class="palette-desc">${theme.id}</span>` +
+				`</span>` +
+				(theme.id === current
+					? `<span class="palette-now">now</span>`
+					: `<span class="palette-hex">${theme.chrome}</span>`);
 			btn.addEventListener("click", () => {
 				setTheme(theme.id);
 				closePalette();
@@ -424,7 +429,7 @@ const links = [
 		font-size: 0.78rem;
 		color: var(--text-secondary);
 		/* Underline is always laid out but transparent until hover/active —
-		   feedback is the line, never a colour shift on the text itself. */
+			   feedback is the line, never a colour shift on the text itself. */
 		text-decoration: underline;
 		text-decoration-color: transparent;
 		text-decoration-thickness: 1px;
@@ -566,9 +571,9 @@ const links = [
 
 	.palette-box {
 		position: absolute;
-		top: 16vh;
+		top: 50%;
 		left: 50%;
-		transform: translateX(-50%);
+		transform: translate(-50%, -50%);
 		width: min(92vw, 24rem);
 		background: var(--surface);
 		outline: 1px solid var(--border-strong);
@@ -605,21 +610,51 @@ const links = [
 	.palette-item {
 		display: flex;
 		align-items: center;
-		gap: 0.6rem;
+		gap: 0.7rem;
 		width: 100%;
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
 		color: var(--text-secondary);
 		background: none;
 		border: 0;
-		padding: 0.55rem 0.6rem;
+		padding: 0.55rem 0.65rem;
 		cursor: pointer;
 		text-align: left;
+	}
+
+	/* The swatch is the row's "app icon": bigger than the dropdown's dot. */
+	.palette-item .swatch {
+		width: 22px;
+		height: 22px;
+	}
+
+	.palette-text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.05rem;
+		min-width: 0;
+	}
+
+	.palette-name {
+		font-size: 0.8rem;
+		color: var(--text);
+	}
+
+	.palette-desc {
+		font-size: 0.64rem;
+		color: var(--text-muted);
 	}
 
 	.palette-item.is-sel {
 		background: var(--surface-2);
 		color: var(--text);
+	}
+
+	@media (hover: hover) {
+		.palette-item:hover {
+			background: var(--surface-2);
+			color: var(--text);
+		}
 	}
 
 	.palette-item[aria-selected="true"] .palette-name {
@@ -632,6 +667,12 @@ const links = [
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		color: var(--brand);
+	}
+
+	.palette-hex {
+		margin-left: auto;
+		font-size: 0.66rem;
+		color: var(--text-muted);
 	}
 
 	.palette-foot {
