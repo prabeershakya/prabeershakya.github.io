@@ -69,9 +69,6 @@ const links = [
 						<rect x="4" y="4" width="4" height="4" fill="var(--brand)" />
 						<rect x="12" y="4" width="4" height="4" fill="var(--text-muted)" />
 					</svg>
-					<kbd class="picker-kbd" aria-hidden="true">
-						T
-					</kbd>
 				</summary>
 				<ul class="picker-menu" role="listbox" aria-label="Theme">
 					{themes.map((t) => (
@@ -110,41 +107,6 @@ const links = [
 				</li>
 			))}
 		</ul>
-	</div>
-
-	<!--
-		Theme palette — opens on `T` (and Escape/scrim closes it). A small
-		launcher-style panel: type to filter, arrows to move, return to apply.
-		Built as plain DOM by the script; only the shell is static markup.
-	-->
-	<div class="palette" data-theme-palette hidden>
-		<div class="palette-scrim" data-palette-scrim></div>
-		<div class="palette-box" role="dialog" aria-label="Theme palette">
-			<input
-				class="palette-search"
-				data-palette-search
-				type="text"
-				placeholder="search themes…"
-				autocomplete="off"
-				spellcheck="false"
-				aria-label="Search themes"
-			/>
-			<ul class="palette-list" data-palette-list role="listbox" aria-label="Themes"></ul>
-			<div class="palette-foot">
-				<span>
-					<kbd>↑↓</kbd> move
-				</span>
-				<span>
-					<kbd>return</kbd> apply
-				</span>
-				<span>
-					<kbd>f1–f6</kbd> quick apply
-				</span>
-				<span>
-					<kbd>esc</kbd> close
-				</span>
-			</div>
-		</div>
 	</div>
 </header>
 
@@ -204,109 +166,11 @@ const links = [
 		});
 	});
 
-	/* ---------------------------- theme palette ---------------------------- */
+	/* ------------------------------ `T` shortcut ---------------------------- */
 
-	/*
-		`T` opens a searchable palette instead of blind-cycling: type to
-		filter, ↑↓ to move, return to apply, esc or scrim to leave. The list
-		is rebuilt on every keystroke from the same `themes` data.
-	*/
-	const palette = header?.querySelector<HTMLDivElement>("[data-theme-palette]");
-	const search = header?.querySelector<HTMLInputElement>("[data-palette-search]");
-	const list = header?.querySelector<HTMLUListElement>("[data-palette-list]");
-	let filtered = [...themes];
-	let sel = 0;
-
-	const paletteOpen = () => palette !== undefined && palette !== null && !palette.hidden;
-
-	const drawList = () => {
-		if (!list) return;
-		list.innerHTML = "";
-		const current = root.dataset.theme ?? DEFAULT_THEME;
-		filtered.forEach((theme, i) => {
-			const li = document.createElement("li");
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.setAttribute("role", "option");
-			btn.setAttribute("aria-selected", String(theme.id === current));
-			btn.className = `palette-item${i === sel ? " is-sel" : ""}`;
-			btn.innerHTML =
-				`<span class="swatch" style="background:${theme.accent}"></span>` +
-				`<span class="palette-name">${theme.label}</span>` +
-				`<kbd class="palette-fkey" aria-hidden="true">F${i + 1}</kbd>`;
-			btn.addEventListener("click", () => {
-				setTheme(theme.id);
-				closePalette();
-			});
-			li.append(btn);
-			list.append(li);
-		});
-	};
-
-	const openPalette = () => {
-		if (!palette || !search) return;
-		palette.hidden = false;
-		filtered = [...themes];
-		sel = Math.max(
-			0,
-			themes.findIndex((t) => t.id === (root.dataset.theme ?? DEFAULT_THEME)),
-		);
-		search.value = "";
-		drawList();
-		search.focus();
-	};
-
-	const closePalette = () => {
-		if (!palette) return;
-		palette.hidden = true;
-		search?.blur();
-	};
-
-	const filterThemes = () => {
-		const q = (search?.value ?? "").trim().toLowerCase();
-		filtered = q
-			? themes.filter((t) => t.label.toLowerCase().includes(q) || t.id.includes(q))
-			: [...themes];
-		sel = 0;
-		drawList();
-	};
-
-	search?.addEventListener("input", filterThemes);
-	search?.addEventListener("keydown", (event) => {
-		if (event.key === "ArrowDown") {
-			sel = Math.min(filtered.length - 1, sel + 1);
-			drawList();
-			event.preventDefault();
-		} else if (event.key === "ArrowUp") {
-			sel = Math.max(0, sel - 1);
-			drawList();
-			event.preventDefault();
-		} else if (event.key === "Enter") {
-			const theme = filtered[sel];
-			if (theme) {
-				setTheme(theme.id);
-				closePalette();
-			}
-		} else if (/^F[1-6]$/.test(event.key)) {
-			// F-keys mirror the row hints — F3 applies the third visible theme.
-			const theme = filtered[Number(event.key.slice(1)) - 1];
-			if (theme) {
-				setTheme(theme.id);
-				closePalette();
-			}
-			event.preventDefault();
-		}
-	});
-
-	header?.querySelector("[data-palette-scrim]")?.addEventListener("click", closePalette);
-
-	// `T` opens/closes the palette. Ignored while typing — the key must never
-	// hijack a text field (including the palette's own search box).
+	// `T` cycles through the palettes, omarchy-style. Ignored while typing —
+	// the key must never hijack a text field or the picker's own focus nav.
 	document.addEventListener("keydown", (event) => {
-		if (event.key === "Escape" && paletteOpen()) {
-			closePalette();
-			return;
-		}
 		if (event.key.toLowerCase() !== "t") return;
 		const target = event.target as HTMLElement | null;
 		if (
@@ -315,8 +179,12 @@ const links = [
 		)
 			return;
 		if (event.metaKey || event.ctrlKey || event.altKey) return;
-		if (paletteOpen()) closePalette();
-		else openPalette();
+
+		const current = root.dataset.theme ?? DEFAULT_THEME;
+		const index = themes.findIndex((t) => t.id === current);
+		const next = themes[(index + 1) % themes.length].id;
+		setTheme(next);
+		if (picker) picker.open = false;
 	});
 
 	// Click-away close. `details` has no native outside-click behaviour.
@@ -497,14 +365,6 @@ const links = [
 		}
 	}
 
-	.picker-kbd {
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		color: var(--text-muted);
-		border: 1px solid var(--border-subtle);
-		padding: 0 0.28rem;
-	}
-
 	.picker-menu {
 		position: absolute;
 		right: 0;
@@ -555,133 +415,6 @@ const links = [
 		height: 12px;
 		flex: none;
 		box-shadow: 0 0 0 1px var(--border-strong);
-	}
-
-	/* -------------------------- theme palette ------------------------------ */
-
-	.palette {
-		position: fixed;
-		inset: 0;
-		z-index: 90;
-	}
-
-	.palette[hidden] {
-		display: none;
-	}
-
-	.palette-scrim {
-		position: absolute;
-		inset: 0;
-		background: color-mix(in srgb, var(--bg) 55%, transparent);
-	}
-
-	.palette-box {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: min(92vw, 24rem);
-		background: var(--surface);
-		outline: 1px solid var(--border-strong);
-		box-shadow:
-			var(--elevation-hover),
-			0 24px 64px #00000080;
-	}
-
-	.palette-search {
-		display: block;
-		width: 100%;
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
-		color: var(--text);
-		background: var(--surface-2);
-		border: 0;
-		box-shadow: 0 1px 0 var(--border-subtle);
-		padding: 0.7rem 0.9rem;
-		outline: none;
-	}
-
-	.palette-search::placeholder {
-		color: var(--text-muted);
-	}
-
-	.palette-list {
-		list-style: none;
-		margin: 0;
-		padding: 0.35rem;
-		max-height: 16rem;
-		overflow-y: auto;
-	}
-
-	.palette-item {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		width: 100%;
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: var(--text-secondary);
-		background: none;
-		border: 0;
-		padding: 0.55rem 0.65rem;
-		cursor: pointer;
-		text-align: left;
-	}
-
-	/* The swatch is the row's icon: one flat block of the palette's accent. */
-	.palette-item .swatch {
-		width: 22px;
-		height: 22px;
-	}
-
-	.palette-name {
-		font-size: 0.8rem;
-		color: var(--text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.palette-item.is-sel {
-		background: var(--surface-2);
-		color: var(--text);
-	}
-
-	@media (hover: hover) {
-		.palette-item:hover {
-			background: var(--surface-2);
-			color: var(--text);
-		}
-	}
-
-	.palette-item[aria-selected="true"] .palette-name {
-		color: var(--brand);
-	}
-
-	.palette-fkey {
-		margin-left: auto;
-		font-size: 0.66rem;
-		color: var(--text-muted);
-		border: 1px solid var(--border-subtle);
-		padding: 0 0.35rem;
-	}
-
-	.palette-foot {
-		display: flex;
-		gap: 1rem;
-		justify-content: flex-end;
-		font-family: var(--font-mono);
-		font-size: 0.66rem;
-		color: var(--text-muted);
-		box-shadow: 0 -1px 0 var(--border-subtle);
-		padding: 0.5rem 0.7rem;
-	}
-
-	.palette-foot kbd {
-		color: var(--text-secondary);
-		border: 1px solid var(--border-subtle);
-		padding: 0 0.3rem;
-		margin-right: 0.25rem;
 	}
 
 	/* ---------------------------- mobile menu ----------------------------- */
