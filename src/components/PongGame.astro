@@ -23,6 +23,9 @@
 ---
 
 <canvas class="pong" aria-hidden="true"></canvas>
+<button class="pong-exit" id="pong-exit" type="button" title="Exit pong (page refresh)">
+	exit
+</button>
 
 <script>
 	import { GLYPHS, CHAR_W } from "../lib/pixel-font";
@@ -79,7 +82,7 @@
 
 			const toast = document.createElement("div");
 			toast.className = "pong-toast";
-			toast.textContent = on ? "PONG — mouse to move · code again to exit" : "PONG — see you";
+			toast.textContent = on ? "PONG — mouse to move · exit top right" : "PONG — see you";
 			document.body.append(toast);
 			setTimeout(() => toast.remove(), 2600);
 
@@ -373,6 +376,12 @@
 		// Draw one frame so the moment the code unlocks the game it is complete.
 		render();
 	}
+
+	/*
+		Exit button: a plain refresh is the cleanest quit — `data-pong` is
+		never persisted, so a reload lands back on the bubble hero.
+	*/
+	document.getElementById("pong-exit")?.addEventListener("click", () => location.reload());
 </script>
 
 <style>
@@ -390,6 +399,32 @@
 	}
 
 	:global(html[data-pong="on"]) .pong {
+		display: block;
+	}
+
+	/*
+		Exit hatch, top right, only while the game runs. A real button with
+		pointer events — unlike the canvas, it must catch clicks.
+	*/
+	.pong-exit {
+		display: none;
+		position: fixed;
+		top: calc(var(--nav-h) + 0.75rem);
+		right: 1rem;
+		z-index: 60;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--brand);
+		background: var(--surface);
+		box-shadow: var(--elevation-hover);
+		border: 0;
+		padding: 0.5rem 0.9rem;
+		cursor: pointer;
+	}
+
+	:global(html[data-pong="on"]) .pong-exit {
 		display: block;
 	}
 

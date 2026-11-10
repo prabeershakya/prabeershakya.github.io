@@ -136,7 +136,11 @@ keys scrolling the page elsewhere). The loop stops via IntersectionObserver +
 `visibilitychange` when the hero is off-screen or the tab hidden, and never
 starts under reduced motion. The Konami detector never calls preventDefault
 and ignores editable targets. The canvas is `pointer-events: none`; pointer
-tracking lives on the hero section.
+tracking lives on the hero section. While it runs, the frosted hero panel
+hides (`visibility: hidden` — space kept so the canvas stays full-size) and a
+fixed exit button top-right quits by a plain page refresh. Pace ramps with
+every paddle hit and never resets on a point; the AI aims with a per-ball
+wobble so it is beatable.
 
 **Bento boards** (`.bento` in `global.css`): section card grids are 6-column
 boards; tiles are `.card`s with span utilities `.b2/.b3/.b4/.b6` (`.btall` =

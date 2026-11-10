@@ -94,6 +94,12 @@ import Icon from "../Icon.astro";
 		width: 100%;
 	}
 
+	/* While pong runs, the card steps out of the way: hidden but still
+	   holding space, so the canvas keeps the hero's full size. */
+	:global(html[data-pong="on"]) .hero-panel {
+		visibility: hidden;
+	}
+
 	.hero-left {
 		flex: 1 1 54%;
 		min-width: 0;
