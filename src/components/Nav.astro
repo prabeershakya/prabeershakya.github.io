@@ -305,19 +305,24 @@ const links = [
 		font-family: var(--font-mono);
 		font-size: 0.78rem;
 		color: var(--text-secondary);
-		text-decoration: none;
+		/* Underline is always laid out but transparent until hover/active —
+		   feedback is the line, never a colour shift on the text itself. */
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 5px;
 		padding: 0.3rem 0;
-		transition: color var(--ease);
+		transition: text-decoration-color var(--ease);
 		white-space: nowrap;
 	}
 
 	.bar-links a[aria-current] {
-		color: var(--brand);
+		text-decoration-color: var(--brand);
 	}
 
 	@media (hover: hover) {
 		.bar-links a:hover {
-			color: var(--text);
+			text-decoration-color: var(--text);
 		}
 	}
 
