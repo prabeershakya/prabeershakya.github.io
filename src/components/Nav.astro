@@ -138,6 +138,9 @@ const links = [
 					<kbd>return</kbd> apply
 				</span>
 				<span>
+					<kbd>f1–f6</kbd> quick apply
+				</span>
+				<span>
 					<kbd>esc</kbd> close
 				</span>
 			</div>
@@ -228,14 +231,9 @@ const links = [
 			btn.setAttribute("aria-selected", String(theme.id === current));
 			btn.className = `palette-item${i === sel ? " is-sel" : ""}`;
 			btn.innerHTML =
-				`<span class="swatch" style="background:${theme.chrome}"></span>` +
-				`<span class="palette-text">` +
+				`<span class="swatch" style="background:${theme.accent}"></span>` +
 				`<span class="palette-name">${theme.label}</span>` +
-				`<span class="palette-desc">${theme.id}</span>` +
-				`</span>` +
-				(theme.id === current
-					? `<span class="palette-now">now</span>`
-					: `<span class="palette-hex">${theme.chrome}</span>`);
+				`<kbd class="palette-fkey" aria-hidden="true">F${i + 1}</kbd>`;
 			btn.addEventListener("click", () => {
 				setTheme(theme.id);
 				closePalette();
@@ -289,6 +287,14 @@ const links = [
 				setTheme(theme.id);
 				closePalette();
 			}
+		} else if (/^F[1-6]$/.test(event.key)) {
+			// F-keys mirror the row hints — F3 applies the third visible theme.
+			const theme = filtered[Number(event.key.slice(1)) - 1];
+			if (theme) {
+				setTheme(theme.id);
+				closePalette();
+			}
+			event.preventDefault();
 		}
 	});
 
@@ -622,27 +628,18 @@ const links = [
 		text-align: left;
 	}
 
-	/* The swatch is the row's "app icon": bigger than the dropdown's dot. */
+	/* The swatch is the row's icon: one flat block of the palette's accent. */
 	.palette-item .swatch {
 		width: 22px;
 		height: 22px;
 	}
 
-	.palette-text {
-		display: flex;
-		flex-direction: column;
-		gap: 0.05rem;
-		min-width: 0;
-	}
-
 	.palette-name {
 		font-size: 0.8rem;
 		color: var(--text);
-	}
-
-	.palette-desc {
-		font-size: 0.64rem;
-		color: var(--text-muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.palette-item.is-sel {
@@ -661,18 +658,12 @@ const links = [
 		color: var(--brand);
 	}
 
-	.palette-now {
-		margin-left: auto;
-		font-size: 0.62rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--brand);
-	}
-
-	.palette-hex {
+	.palette-fkey {
 		margin-left: auto;
 		font-size: 0.66rem;
 		color: var(--text-muted);
+		border: 1px solid var(--border-subtle);
+		padding: 0 0.35rem;
 	}
 
 	.palette-foot {
