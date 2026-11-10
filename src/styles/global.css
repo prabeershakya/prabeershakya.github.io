@@ -292,6 +292,55 @@ h4 {
 	}
 }
 
+/* --------------------------------- bento ---------------------------------- */
+
+/*
+	Bento boards: tiles of mixed spans on one 6-column grid. Span classes are
+	utilities (.b2/.b3/.b4/.b6, .btall for a second row) so a section re-tiling
+	is markup, not new grid CSS. Every tile collapses to full width on small
+	screens — the board becomes a single column.
+*/
+.bento {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 0.9rem;
+}
+
+.bento > .b2 {
+	grid-column: span 2;
+}
+
+.bento > .b3 {
+	grid-column: span 3;
+}
+
+.bento > .b4 {
+	grid-column: span 4;
+}
+
+.bento > .b6 {
+	grid-column: 1 / -1;
+}
+
+.bento > .btall {
+	grid-row: span 2;
+}
+
+@media (max-width: 860px) {
+	.bento {
+		grid-template-columns: 1fr;
+	}
+
+	.bento > .b2,
+	.bento > .b3,
+	.bento > .b4,
+	.bento > .b6,
+	.bento > .btall {
+		grid-column: 1 / -1;
+		grid-row: auto;
+	}
+}
+
 .chip-row {
 	display: flex;
 	flex-wrap: wrap;

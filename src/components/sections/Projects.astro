@@ -43,9 +43,9 @@ const SHIELD = [
 			</div>
 		</div>
 
-		<div class="repo-grid reveal">
+		<div class="repo-grid bento reveal">
 			{repos.map((repo, i) => (
-				<article class:list={["repo card", i === 0 && "repo-lead"]} data-hoverable>
+				<article class:list={["repo card", i === 0 ? "b4 repo-lead" : "b2"]} data-hoverable>
 					<div class="repo-top">
 						<span class="repo-num mono">{String(i + 1).padStart(2, "0")}</span>
 						<span class="repo-lang tag">{repo.lang}</span>
@@ -89,14 +89,13 @@ const SHIELD = [
 	}
 
 	.repo-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.9rem;
+		max-width: 72rem;
+		margin-inline: auto;
 	}
 
-	/* The lead repo spans two columns and gets the larger type. */
+	/* The lead repo spans four columns and gets the larger type. */
 	.repo-lead {
-		grid-column: span 2;
+		grid-column: span 4;
 	}
 
 	.repo {
@@ -137,6 +136,10 @@ const SHIELD = [
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+
+	.repo-lead .repo-desc {
+		-webkit-line-clamp: 3;
 	}
 
 	.repo-lead .repo-desc {
@@ -185,12 +188,8 @@ const SHIELD = [
 	}
 
 	@media (max-width: 640px) {
-		.repo-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.repo-lead {
-			grid-column: auto;
+		.repo-desc {
+			-webkit-line-clamp: 3;
 		}
 	}
 </style>

@@ -74,9 +74,6 @@ import Icon from "../Icon.astro";
 		/* Bubbles sit at z 0, the pong easter egg at z 1 — content above both. */
 		position: relative;
 		z-index: 2;
-		display: flex;
-		align-items: center;
-		gap: clamp(2rem, 5vw, 4rem);
 	}
 
 	/*
@@ -90,15 +87,15 @@ import Icon from "../Icon.astro";
 		background: color-mix(in srgb, var(--surface) 90%, transparent);
 		backdrop-filter: blur(8px);
 		box-shadow: var(--elevation);
-		padding: clamp(1.4rem, 3vw, 2.4rem);
+		padding: clamp(1.1rem, 2.4vw, 1.8rem);
 		display: flex;
 		align-items: center;
-		gap: clamp(1.6rem, 4vw, 3.2rem);
+		gap: clamp(1.2rem, 3vw, 2.4rem);
 		width: 100%;
 	}
 
 	.hero-left {
-		flex: 1 1 60%;
+		flex: 1 1 54%;
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
@@ -147,8 +144,8 @@ import Icon from "../Icon.astro";
 	}
 
 	.hero-right {
-		flex: 0 1 42%;
-		max-width: min(100%, 460px);
+		flex: 0 1 46%;
+		max-width: min(100%, 540px);
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;

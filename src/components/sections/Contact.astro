@@ -16,8 +16,8 @@ import Icon from "../Icon.astro";
 			</p>
 		</div>
 
-		<div class="way-list reveal">
-			<a class="way card" data-hoverable href={`mailto:${profile.email}`}>
+		<div class="way-list bento reveal">
+			<a class="way card b6" data-hoverable href={`mailto:${profile.email}`}>
 				<span class="way-icon" aria-hidden="true">
 					<Icon name="mail" />
 				</span>
@@ -27,7 +27,7 @@ import Icon from "../Icon.astro";
 					↗
 				</span>
 			</a>
-			<a class="way card" data-hoverable href={profile.github} target="_blank" rel="noopener">
+			<a class="way card b2" data-hoverable href={profile.github} target="_blank" rel="noopener">
 				<span class="way-icon" aria-hidden="true">
 					<Icon name="github" />
 				</span>
@@ -37,7 +37,7 @@ import Icon from "../Icon.astro";
 					↗
 				</span>
 			</a>
-			<a class="way card" data-hoverable href={profile.linkedin} target="_blank" rel="noopener">
+			<a class="way card b2" data-hoverable href={profile.linkedin} target="_blank" rel="noopener">
 				<span class="way-icon" aria-hidden="true">
 					<Icon name="linkedin" />
 				</span>
@@ -47,7 +47,13 @@ import Icon from "../Icon.astro";
 					↗
 				</span>
 			</a>
-			<a class="way card" data-hoverable href={profile.hackthebox} target="_blank" rel="noopener">
+			<a
+				class="way card b2"
+				data-hoverable
+				href={profile.hackthebox}
+				target="_blank"
+				rel="noopener"
+			>
 				<span class="way-icon" aria-hidden="true">
 					<Icon name="hackthebox" />
 				</span>
@@ -80,10 +86,8 @@ import Icon from "../Icon.astro";
 	}
 
 	.way-list {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.9rem;
-		max-width: 56rem;
+		max-width: 72rem;
+		margin-inline: auto;
 	}
 
 	.way {
@@ -150,10 +154,6 @@ import Icon from "../Icon.astro";
 	}
 
 	@media (max-width: 640px) {
-		.way-list {
-			grid-template-columns: 1fr;
-		}
-
 		.way {
 			flex-wrap: wrap;
 		}

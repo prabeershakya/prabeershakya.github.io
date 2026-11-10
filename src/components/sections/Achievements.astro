@@ -59,21 +59,21 @@ const TROPHY = [
 			</h2>
 		</div>
 
-		<div class="stats reveal">
-			<div class="stats-art" aria-hidden="true">
-				<PixelArt map={TROPHY} palette={{ b: "var(--brand)", d: "var(--brand-ink)" }} />
-			</div>
-			{stats.map((stat) => (
-				<div class="stat">
-					<span class="stat-value">{stat.value}</span>
-					<span class="stat-label">{stat.label}</span>
+		<div class="ach-bento bento reveal">
+			<div class="stats b6">
+				<div class="stats-art" aria-hidden="true">
+					<PixelArt map={TROPHY} palette={{ b: "var(--brand)", d: "var(--brand-ink)" }} />
 				</div>
-			))}
-		</div>
+				{stats.map((stat) => (
+					<div class="stat">
+						<span class="stat-value">{stat.value}</span>
+						<span class="stat-label">{stat.label}</span>
+					</div>
+				))}
+			</div>
 
-		<div class="plat reveal">
 			<a
-				class="plat-item card"
+				class="plat-item card b3"
 				data-hoverable
 				href={profile.tryhackme}
 				target="_blank"
@@ -86,7 +86,7 @@ const TROPHY = [
 				<span class="plat-name mono">tryhackme</span>
 			</a>
 			<a
-				class="plat-item card"
+				class="plat-item card b3"
 				data-hoverable
 				href={profile.hackthebox}
 				target="_blank"
@@ -98,78 +98,80 @@ const TROPHY = [
 				<span class="plat-rank">Hacker</span>
 				<span class="plat-name mono">hackthebox</span>
 			</a>
-		</div>
 
-		<div class="tm reveal" data-team-tabs>
-			<div class="tm-tablist" role="tablist" aria-label="CTF teams">
+			<div class="tm b6" data-team-tabs>
+				<div class="tm-tablist" role="tablist" aria-label="CTF teams">
+					{teams.map((team, i) => (
+						<button
+							class="tm-tab"
+							type="button"
+							role="tab"
+							id={`tm-tab-${team.id}`}
+							aria-controls={`tm-panel-${team.id}`}
+							aria-selected={i === 0 ? "true" : "false"}
+							tabindex={i === 0 ? 0 : -1}
+							data-team-tab={i}
+						>
+							{team.short}
+							<span class="tm-tab-count">
+								{Math.min(ENTRY_CAP, team.results.length)}
+								{team.results.length > ENTRY_CAP && <span aria-hidden="true">+</span>}
+							</span>
+						</button>
+					))}
+				</div>
+
 				{teams.map((team, i) => (
-					<button
-						class="tm-tab"
-						type="button"
-						role="tab"
-						id={`tm-tab-${team.id}`}
-						aria-controls={`tm-panel-${team.id}`}
-						aria-selected={i === 0 ? "true" : "false"}
-						tabindex={i === 0 ? 0 : -1}
-						data-team-tab={i}
+					<div
+						class="tm-panel"
+						role="tabpanel"
+						id={`tm-panel-${team.id}`}
+						aria-labelledby={`tm-tab-${team.id}`}
+						data-team-panel={i}
+						hidden={i !== 0}
 					>
-						{team.short}
-						<span class="tm-tab-count">
-							{Math.min(ENTRY_CAP, team.results.length)}
-							{team.results.length > ENTRY_CAP && <span aria-hidden="true">+</span>}
-						</span>
-					</button>
+						<p class="tm-standing mono">
+							<span class="tm-team-name">{team.name}</span>
+							{team.standing}
+						</p>
+
+						<div class="tm-grid">
+							{[...team.results]
+								.sort((a, b) => a.place - b.place)
+								.slice(0, ENTRY_CAP)
+								.map((result, j) => (
+									<a
+										class:list={[
+											"tm-tile card",
+											j % 2 === 0 ? "col-left" : "col-right",
+											j === 0 && "tm-lead",
+										]}
+										data-hoverable
+										href={result.url ?? team.url}
+										target="_blank"
+										rel="noopener"
+									>
+										<span class="tm-tile-place">{placeLabel(result.place)}</span>
+										<span class="tm-tile-event">{result.event}</span>
+										{(hasValue(result.scale) || hasValue(result.points)) && (
+											<span class="tm-tile-meta mono">
+												{hasValue(result.scale) && <span>{result.scale}</span>}
+												{hasValue(result.points) && (
+													<span class="tm-tile-pts">{result.points}</span>
+												)}
+											</span>
+										)}
+									</a>
+								))}
+						</div>
+
+						<a class="tm-foot mono" href={team.url} target="_blank" rel="noopener">
+							{ctftimeFetched ? "live from ctftime" : "curated"} · all {team.totalEvents} events on
+							record →
+						</a>
+					</div>
 				))}
 			</div>
-
-			{teams.map((team, i) => (
-				<div
-					class="tm-panel"
-					role="tabpanel"
-					id={`tm-panel-${team.id}`}
-					aria-labelledby={`tm-tab-${team.id}`}
-					data-team-panel={i}
-					hidden={i !== 0}
-				>
-					<p class="tm-standing mono">
-						<span class="tm-team-name">{team.name}</span>
-						{team.standing}
-					</p>
-
-					<div class="tm-grid">
-						{[...team.results]
-							.sort((a, b) => a.place - b.place)
-							.slice(0, ENTRY_CAP)
-							.map((result, j) => (
-								<a
-									class:list={[
-										"tm-tile card",
-										j % 2 === 0 ? "col-left" : "col-right",
-										j === 0 && "tm-lead",
-									]}
-									data-hoverable
-									href={result.url ?? team.url}
-									target="_blank"
-									rel="noopener"
-								>
-									<span class="tm-tile-place">{placeLabel(result.place)}</span>
-									<span class="tm-tile-event">{result.event}</span>
-									{(hasValue(result.scale) || hasValue(result.points)) && (
-										<span class="tm-tile-meta mono">
-											{hasValue(result.scale) && <span>{result.scale}</span>}
-											{hasValue(result.points) && <span class="tm-tile-pts">{result.points}</span>}
-										</span>
-									)}
-								</a>
-							))}
-					</div>
-
-					<a class="tm-foot mono" href={team.url} target="_blank" rel="noopener">
-						{ctftimeFetched ? "live from ctftime" : "curated"} · all {team.totalEvents} events on
-						record →
-					</a>
-				</div>
-			))}
 		</div>
 	</div>
 </section>
@@ -215,6 +217,11 @@ const TROPHY = [
 <style>
 	/* ------------------------------ stats band ------------------------------ */
 
+	.ach-bento {
+		max-width: 72rem;
+		margin-inline: auto;
+	}
+
 	.stats {
 		display: grid;
 		grid-template-columns: auto repeat(4, 1fr);
@@ -223,7 +230,6 @@ const TROPHY = [
 		background: var(--bg-deep);
 		border: 1px solid var(--border-subtle);
 		padding: clamp(1.2rem, 3vw, 1.8rem) clamp(1.4rem, 3.5vw, 2.4rem);
-		margin-bottom: 1.4rem;
 	}
 
 	.stats-art :global(svg) {
@@ -256,18 +262,11 @@ const TROPHY = [
 
 	/* --------------------------- platform strip ----------------------------- */
 
-	.plat {
-		display: flex;
-		gap: 0.9rem;
-		margin-bottom: 1.6rem;
-	}
-
 	.plat-item {
-		flex: 1;
 		display: flex;
 		align-items: baseline;
 		gap: 0.6rem;
-		padding: 0.6rem 0.9rem;
+		padding: 1rem 1.2rem;
 		text-decoration: none;
 	}
 

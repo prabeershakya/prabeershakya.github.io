@@ -50,9 +50,13 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 				appears here.
 			</p>
 		) : (
-			<div class="wu-grid reveal">
-				{writeups.slice(0, CAP).map((w) => (
-					<article class="wu card" data-hoverable style={`--sev:${SEVERITY_COLOR[w.severity]}`}>
+			<div class="wu-grid bento reveal">
+				{writeups.slice(0, CAP).map((w, i) => (
+					<article
+						class:list={["wu", "card", i === 0 ? "b3 btall wu-lead" : i < 3 ? "b3" : "b2"]}
+						data-hoverable
+						style={`--sev:${SEVERITY_COLOR[w.severity]}`}
+					>
 						<span class="wu-head">
 							<span class="wu-source mono">
 								<Icon name="file-text" size={12} /> {w.source}
@@ -88,9 +92,8 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 
 <style>
 	.wu-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.9rem;
+		max-width: 72rem;
+		margin-inline: auto;
 	}
 
 	/*
@@ -105,6 +108,16 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 		gap: 0.45rem;
 		padding: 1.1rem 1.2rem;
 		padding-inline-start: 1.35rem;
+	}
+
+	/* The lead writeup: bigger voice, fills its tall tile. */
+	.wu-lead .wu-title {
+		font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+	}
+
+	.wu-lead .wu-summary {
+		-webkit-line-clamp: 5;
+		max-width: none;
 	}
 
 	.wu::before {
@@ -207,8 +220,8 @@ const SEVERITY_COLOR: Record<Severity, string> = {
 	}
 
 	@media (max-width: 780px) {
-		.wu-grid {
-			grid-template-columns: 1fr;
+		.wu-summary {
+			max-width: none;
 		}
 	}
 </style>

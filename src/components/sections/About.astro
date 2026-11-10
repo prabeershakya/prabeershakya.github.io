@@ -10,8 +10,8 @@
 			</h2>
 		</div>
 
-		<div class="about-grid">
-			<div class="about-copy reveal">
+		<div class="about-grid bento">
+			<div class="about-copy card b4 reveal">
 				<p>
 					I'm a cyber security learner who fell down a rabbit hole the day I realised the internet
 					isn't magic — it's requests, headers, servers and assumptions. Now I spend my free time
@@ -28,7 +28,7 @@
 				</p>
 			</div>
 
-			<blockquote class="about-pull reveal">
+			<blockquote class="about-pull card b2 reveal">
 				"i don't hack people. i hack systems —<br />
 				so the good guys win."
 				<footer class="about-signature mono">— PRABEER</footer>
@@ -43,10 +43,12 @@
 	}
 
 	.about-grid {
-		display: grid;
-		grid-template-columns: 1.4fr 1fr;
-		gap: clamp(2rem, 5vw, 4rem);
-		align-items: start;
+		max-width: 62rem;
+		margin-inline: auto;
+	}
+
+	.about-copy {
+		padding: 1.4rem 1.6rem;
 	}
 
 	.about-copy p {
@@ -68,12 +70,13 @@
 	.about-pull {
 		margin: 0;
 		padding: 1.4rem 1.5rem;
-		background: var(--surface);
-		box-shadow: var(--elevation);
 		font-family: var(--font-mono);
 		font-size: clamp(1rem, 1.8vw, 1.2rem);
 		line-height: 1.6;
 		color: var(--text);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
 	.about-signature {
@@ -82,11 +85,5 @@
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		color: var(--brand);
-	}
-
-	@media (max-width: 860px) {
-		.about-grid {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>
