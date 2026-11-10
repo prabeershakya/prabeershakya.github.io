@@ -138,6 +138,12 @@ starts under reduced motion. The Konami detector never calls preventDefault
 and ignores editable targets. The canvas is `pointer-events: none`; pointer
 tracking lives on the hero section.
 
+**Bento boards** (`.bento` in `global.css`): section card grids are 6-column
+boards; tiles are `.card`s with span utilities `.b2/.b3/.b4/.b6` (`.btall` =
+two rows). Re-tiling a section is markup — span classes — not new grid CSS.
+Every tile collapses to full width ≤860px. Boards get `max-width: 72rem` +
+`margin-inline: auto` (centered blocks, left-aligned text inside).
+
 **Hairlines, not shadows.** Depth is `var(--elevation)` (a 1px outline); hover
 steps to `--elevation-hover` plus a 2px lift. No offset shadows, no blur
 glows, radius is 0 everywhere.
