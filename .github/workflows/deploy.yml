@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages needs `pages: write` to publish and `id-token: write` to prove the
+# deployment came from this workflow.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. Don't cancel a run that is mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # `withastro/action` installs dependencies, runs `npm run build`, and
+      # uploads `dist/` as the Pages artifact. That build also refreshes the
+      # GitHub + CTFtime data; the token keeps the GitHub API well clear of the
+      # 60 req/hr anonymous limit. A failed fetch is not a failed build — the
+      # committed snapshots in src/data/ carry it.
+      - name: Build and upload
+        uses: withastro/action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          node-version: 22
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
